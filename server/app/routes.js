@@ -37,13 +37,30 @@ module.exports = function (app) {
 
 
 
-    //User routes
+    // =========================================================================
+    // USER ROUTES =============================================================
+    // =========================================================================
     app.post(BASE_PATH + '/user/create', function (req, res) {
         controller.createUser(req, function (data) {
             res.json(data);
         });
 
 
+    });
+
+    app.post(BASE_PATH + '/user/login', function (req, res) {
+       controller.loginUser(req, function (err, data, message) {
+           if (err) {
+               res.json(err);
+           }
+           //return true if login is correct
+           if (data) {
+               res.json(data);
+           }
+           if (message) {
+              res.json(message);
+           }
+       });
     });
 
     module.exports = app;

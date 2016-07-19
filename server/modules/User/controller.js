@@ -46,6 +46,43 @@ var create = function (req, res) {
 
 };
 
+/**
+ *  Strategy for login
+ * @param {String} req.email
+ * @param {String} req.password
+ * @param {Function} Callback - res(err, user, message)
+ */
+
+var login = function (req, res) {
+    User.findOne({email: req.email}, function (err, data) {
+
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        };
+
+        var message;
+        if (!data) {
+            message = {
+                message: 'User not found!'
+            };
+            res(message);
+        } else {
+            var user = new User({email: req.email, password: req.password});
+            user.comparePassword(req.password, data.password, function (err, data) {
+               if (data) {
+                   res(null, data);
+               } else {
+                   message = 'Incorrect password!';
+                   res(null, false, message);
+               }
+            });
+        }
+    });
+};
+
+
 module.exports = {
-    create : create
+    create : create,
+    login: login
 };

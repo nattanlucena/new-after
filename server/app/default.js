@@ -8,6 +8,11 @@ var createUser = function (req, res) {
   UserController.create(req.body, res);
 };
 
+var loginUser = function (req, res) {
+  UserController.login(req.body, res);
+};
+
 module.exports = {
-    createUser : createUser
+    createUser : createUser,
+    loginUser: loginUser
 };

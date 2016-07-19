@@ -17,7 +17,7 @@ var LOCK_TIME = 2 * 60 * 60 * 1000;
 
 //###################
 var userSchema = new Schema({
-        name: {type: String, required: true},
+        name: String,
         email: {type: String, required: true, index: { unique: true } },
         password: {type: String, required: true},
         //store how many consecutive failures
@@ -49,14 +49,16 @@ userSchema.pre('save', function (next) {
 });
 
 //Define a static comparePassword method for User Schema
-userSchema.methods.comparePassword = function (plainText, callback) {
-  bcrypt.compare(plainText, this.password, function (err, data) {
+userSchema.methods.comparePassword = function (plainText, userPassword, callback) {
+  bcrypt.compare(plainText, userPassword, function (err, data) {
       if (err) {
-          return callback(err);
+          callback(err);
+      } else {
+          callback(null, data);
       }
-      callback(null, data);
-  })
+  });
 };
+
 
 /*
 //http://devsmash.com/blog/implementing-max-login-attempts-with-mongoose
