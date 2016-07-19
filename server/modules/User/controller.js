@@ -59,7 +59,7 @@ var login = function (req, res) {
         if (err) {
             var err = new Error(err);
             throw err;
-        };
+        }
 
         var message;
         if (!data) {
