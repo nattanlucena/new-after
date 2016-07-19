@@ -7,11 +7,13 @@ var B = require('bluebird');
 
 
 /**
+ * Verify if an user already exists. Case false, create a new user. Case true, return
+ *  a message in callback
  *
- * @param req.name
- * @param req.email
- * @param req.password
- * @param res(err, data)
+ * @param {String} req.name
+ * @param {String} req.email
+ * @param {String} req.password
+ * @param {Function} Callback - res(err, data)
  */
 var create = function (req, res) {
 
