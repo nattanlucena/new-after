@@ -6,6 +6,7 @@
 var express = require('express');
 var webAppPath = '../../client/app';
 var BASE_PATH = '/api/v1';
+var controller = require('./default');
 
 
 module.exports = function (app) {
@@ -34,6 +35,16 @@ module.exports = function (app) {
         res.end('Server On');
     });
 
+
+
+    //User routes
+    app.post(BASE_PATH + '/user/create', function (req, res) {
+        controller.createUser(req, function (data) {
+            res.json(data);
+        });
+
+
+    });
 
     module.exports = app;
 };

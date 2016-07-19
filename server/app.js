@@ -15,6 +15,12 @@ var database = require('./config/db');
 var SERVER_PORT = process.env.port || 8080;
 
 
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride());
+app.use(cors());
+
 // routes
 require('./app/routes.js')(app);
 
