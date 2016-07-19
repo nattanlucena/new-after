@@ -37,7 +37,7 @@ var create = function (req, res) {
                 }
                 //User successfully created
                 var message = {
-                    message: 'The user was successfully created!'
+                    message: 'The user was created successfully!'
                 };
                 res(message);
             });
@@ -45,6 +45,37 @@ var create = function (req, res) {
 
     });
 
+};
+
+/**
+ *  Get an user by email
+ *
+ * @param {Object} req
+ * @param {String} req.email
+ * @param res
+ */
+var findByEmail = function (req, res) {
+    User.findOne({email: req.email}, function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (data !== null) {
+            var result = {
+                name: data.name,
+                email: data.email
+            };
+
+            res(result);
+        } else {
+            var message = {
+                message: 'User not found!'
+            };
+            res(message);
+        }
+
+    });
 };
 
 /**
@@ -58,7 +89,6 @@ var create = function (req, res) {
 
 var login = function (req, res) {
     User.findOne({email: req.email}, function (err, data) {
-
         if (err) {
             var err = new Error(err);
             throw err;
@@ -84,8 +114,40 @@ var login = function (req, res) {
     });
 };
 
+/**
+ *  Remove a user account
+ *
+ * @param {Object} req
+ * @param {String} req.email
+ * @param {Function} res - Callback
+ */
+var remove = function (req, res) {
+
+    User.findOneAndRemove({email: req.email}, function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+        var message;
+        if (data) {
+            message = {
+                message: 'The user was removed successfully!'
+            };
+
+        } else {
+            message = {
+                message: 'TUser not found!'
+            };
+        }
+
+        res(message);
+    });
+
+};
 
 module.exports = {
     create : create,
-    login: login
+    login: login,
+    findByEmail: findByEmail,
+    remove: remove
 };

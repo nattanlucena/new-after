@@ -2,7 +2,6 @@
  * Created by nattanlucena on 19/07/16.
  */
 
-//var controller = require('./default.js');
 var express = require('express');
 var webAppPath = '../../client/app';
 var BASE_PATH = '/api/v1';
@@ -40,6 +39,15 @@ module.exports = function (app) {
     // =========================================================================
     // USER ROUTES =============================================================
     // =========================================================================
+
+    //get an user by email
+    app.get(BASE_PATH + '/user/findByEmail', function (req, res) {
+        controller.findUserByEmail(req, function (data) {
+            res.json(data);
+        });
+    });
+    
+    //create a new user
     app.post(BASE_PATH + '/user/create', function (req, res) {
         controller.createUser(req, function (data) {
             res.json(data);
@@ -48,6 +56,7 @@ module.exports = function (app) {
 
     });
 
+    //user login
     app.post(BASE_PATH + '/user/login', function (req, res) {
        controller.loginUser(req, function (err, data, message) {
            if (err) {
@@ -62,6 +71,14 @@ module.exports = function (app) {
            }
        });
     });
+
+    app.delete(BASE_PATH + '/user/remove', function (req, res) {
+       controller.removeUser(req, function (data) {
+          res.json(data);
+       });
+       
+    });
+
 
     module.exports = app;
 };
