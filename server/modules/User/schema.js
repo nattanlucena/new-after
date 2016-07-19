@@ -22,6 +22,7 @@ var userSchema = new Schema({
     {collection: 'user'});
 
 
+//Define a trigger for user password pre save
 userSchema.pre('save', function (next) {
    var _this = this;
 
@@ -40,5 +41,15 @@ userSchema.pre('save', function (next) {
         });
     });
 });
+
+//Define a static comparePassword method for User Schema
+userSchema.methods.comparePassword = function (plainText, callback) {
+  bcrypt.compare(plainText, this.password, function (err, data) {
+      if (err) {
+          return callback(err);
+      }
+      callback(null, data);
+  })
+};
 
 module.exports = userSchema;
