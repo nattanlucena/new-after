@@ -25,8 +25,11 @@ var managerSchema = new Schema({
         sex: {type: String, required: true},
         phone: String,
         email: {type: String, required: true, index: { unique: true } },
-        password: {type: String, required: true},
-        motels: [MotelSchema]
+        password: {type: String, required: true, select: false },
+        motels: [{
+            motel: { type: Schema.Types.ObjectId, ref: 'Motel'},
+            created_at: { type: Date, default: Date.now }
+        }]
     },
     {collection: 'manager'});
 

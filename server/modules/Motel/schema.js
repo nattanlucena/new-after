@@ -23,7 +23,8 @@ var motelSchema = new Schema({
             state: String,
             cep: String
         },
-        rooms: [RoomSchema]
+        rooms: [RoomSchema],
+        created_by: { type: Schema.Types.ObjectId, ref: 'Manager' }
     },
     {collection: 'motel'});
 
