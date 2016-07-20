@@ -3,8 +3,11 @@
  */
 
 var express = require('express');
-var webAppPath = '../../client/app';
+var path = require('path');
+var webAppPath = '/client/app';
 var BASE_PATH = '/api/v1';
+var webAppPublicPath = webAppPath + '/public';
+var rootPath = path.normalize(__dirname + '/../..');
 
 //controllers
 var UserController = require('../modules/User/controller');
@@ -27,9 +30,12 @@ module.exports = function (app) {
     // =========================================================================
     // DEFAULT =================================================================
     // =========================================================================
+    
+    // Use static
+    app.use('/public', express.static(rootPath + webAppPublicPath));
 
-    app.get('/client', function (req, res) {
-        res.sendFile('index.html', {root: webAppPath});
+    app.get('/', function (req, res) {
+        res.sendFile('index.html', {root: rootPath + webAppPath});
     });
 
     app.get(BASE_PATH, function (req, res) {
@@ -37,10 +43,10 @@ module.exports = function (app) {
         res.end('Server On');
     });
 
-    app.get('/', function (req, res) {
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.end('Server On');
+    app.get('/*', function (req, res) {
+        res.redirect('/');
     });
+
 
 
 

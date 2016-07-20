@@ -1,0 +1,27 @@
+{
+  "name": "AfterWeb",
+  "version": "0.0.0",
+  "homepage": "https://github.com/rogersdk/new-after",
+  "authors": [
+    "Rogério Nóbrega <rogeriocnobrega@gmail.com>"
+  ],
+  "description": "This is the Web App After",
+  "main": "app.js",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.5.7",
+    "jquery": "~3.1.0",
+    "angular-ui-router": "ui-router#~0.3.1"
+  }
+}
