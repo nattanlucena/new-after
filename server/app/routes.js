@@ -8,6 +8,8 @@ var BASE_PATH = '/api/v1';
 
 //controllers
 var UserController = require('../modules/User/controller');
+var MotelController = require('../modules/Motel/controller');
+var ManagerController = require('../modules/Manager/controller');
 
 
 module.exports = function (app) {
@@ -90,7 +92,18 @@ module.exports = function (app) {
 
     //create a new motel account
     app.post(BASE_PATH + '/user/create', function (req, res) {
-        UserController.create(req.body, function (data) {
+        MotelController.create(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
+    // =========================================================================
+    // MANAGER ROUTES ==========================================================
+    // =========================================================================
+
+    //create a new motel account
+    app.post(BASE_PATH + '/manager/create', function (req, res) {
+        ManagerController.create(req.body, function (data) {
             res.json(data);
         });
     });

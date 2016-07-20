@@ -9,6 +9,6 @@
  */
 var mongoose = require('mongoose');
 var schema = require('./schema');
-var schemaName = 'MotelManager';
+var schemaName = 'Manager';
 
 module.exports = mongoose.model(schemaName, schema);

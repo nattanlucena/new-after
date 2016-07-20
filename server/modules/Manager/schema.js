@@ -10,24 +10,27 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
+var SALT_WORK_FACTOR = 10;
+var HASH = '632a2406bbcbcd553eec45ac14b40a0a';
 
 var MotelSchema = require('../Motel/schema');
 
 //###################
 //TODO: finalizar schema do motel
-var motelManagerSchema = new Schema({
-        firstName: String,
-        lastName: String,
+var managerSchema = new Schema({
+        firstName: {type: String, required: true},
+        lastName: {type: String, required: true},
+        sex: {type: String, required: true},
         phone: String,
         email: {type: String, required: true, index: { unique: true } },
-        password: String,
+        password: {type: String, required: true},
         motels: [MotelSchema]
     },
-    {collection: 'motelmanager'});
+    {collection: 'manager'});
 
 
-//Define a trigger for MotelManager password pre save
-userSchema.pre('save', function (next) {
+//Define a trigger for Manager password pre save
+managerSchema.pre('save', function (next) {
     var _this = this;
 
     if(!_this.isModified('password')) {
@@ -46,8 +49,8 @@ userSchema.pre('save', function (next) {
     });
 });
 
-//Define a static comparePassword method for MotelManager Schema
-userSchema.methods.comparePassword = function (plainText, userPassword, callback) {
+//Define a static comparePassword method for Manager Schema
+managerSchema.methods.comparePassword = function (plainText, userPassword, callback) {
     bcrypt.compare(plainText, userPassword, function (err, data) {
         if (err) {
             callback(err);
@@ -57,4 +60,4 @@ userSchema.methods.comparePassword = function (plainText, userPassword, callback
     });
 };
 
-module.exports = motelManagerSchema;
+module.exports = managerSchema;

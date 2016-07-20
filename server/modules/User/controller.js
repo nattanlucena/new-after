@@ -32,6 +32,12 @@ var create = function (req, res) {
         } else {
             User(req).save(function (err, data) {
                 if (err) {
+                    if (err.name === 'ValidationError') {
+                        var message = {
+                            message: 'Verify required fields!'
+                        };
+                        res(message);
+                    }
                     var err = new Error(err);
                     throw err;
                 }
