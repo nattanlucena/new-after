@@ -14,6 +14,8 @@ var Schema = mongoose.Schema;
 var reservationSchema = new Schema({
         //reservation code
         code: String,
+        //Confirmed, Cancelled ...
+        status: String,
         createdAt: {type: Date, default: Date.now()},
         checkIn: Date,
         checkOut: Date,
