@@ -26,7 +26,7 @@ var create = function (req, res) {
 
         if (data !== null) {
             var message = {
-                message: 'Manager already created!'
+                message: 'Manager account already created!'
             };
             res(message);
         } else {
@@ -47,7 +47,7 @@ var create = function (req, res) {
                 }
                 //User successfully created
                 var message = {
-                    message: 'The manager was created successfully!'
+                    message: 'The manager account was created successfully!'
                 };
                 res(message);
             });

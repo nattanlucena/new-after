@@ -26,7 +26,7 @@ var create = function (req, res) {
 
         if (data !== null) {
             var message = {
-                message: 'User already created!'
+                message: 'User account already created!'
             };
             res(message);
         } else {
@@ -43,7 +43,7 @@ var create = function (req, res) {
                 }
                 //User successfully created
                 var message = {
-                    message: 'The user was created successfully!'
+                    message: 'The user account was created successfully!'
                 };
                 res(message);
             });
@@ -137,12 +137,12 @@ var remove = function (req, res) {
         var message;
         if (data) {
             message = {
-                message: 'The user was removed successfully!'
+                message: 'The user account was removed successfully!'
             };
 
         } else {
             message = {
-                message: 'TUser not found!'
+                message: 'User not found!'
             };
         }
 
