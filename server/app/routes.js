@@ -91,7 +91,7 @@ module.exports = function (app) {
     // =========================================================================
 
     //create a new motel account
-    app.post(BASE_PATH + '/user/create', function (req, res) {
+    app.post(BASE_PATH + '/motel/create', function (req, res) {
         MotelController.create(req.body, function (data) {
             res.json(data);
         });

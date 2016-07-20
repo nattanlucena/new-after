@@ -9,6 +9,11 @@ var Manager = require('./model');
  *  a message in callback
  *
  * @param {Object} req
+ * @param {String} req.name
+ * @param {String} req.email
+ * @param {String} req.sex
+ * @param {String} req.phone
+ * @param {String} req.password
  * @param {Function} res - Callback : res(err, data)
  */
 var create = function (req, res) {
@@ -25,6 +30,10 @@ var create = function (req, res) {
             };
             res(message);
         } else {
+            req.name = {
+                first: req.firstName,
+                last: req.lastName
+            };
             Manager(req).save(function (err, data) {
                 if (err) {
                     if (err.name === 'ValidationError') {

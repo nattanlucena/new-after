@@ -18,8 +18,10 @@ var MotelSchema = require('../Motel/schema');
 //###################
 //TODO: finalizar schema do motel
 var managerSchema = new Schema({
-        firstName: {type: String, required: true},
-        lastName: {type: String, required: true},
+        name: {
+            first: {type: String, required: true},
+            last: {type: String, required: true}
+        },
         sex: {type: String, required: true},
         phone: String,
         email: {type: String, required: true, index: { unique: true } },

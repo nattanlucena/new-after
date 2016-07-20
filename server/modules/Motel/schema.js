@@ -17,7 +17,12 @@ var RoomSchema = require('../Room/schema');
 var motelSchema = new Schema({
         //https://docs.mongodb.com/manual/indexes/#Indexes-SparseIndexes
         name: { type: String, required: true, unique: true, sparse: true },
-        address: String,
+        address: {
+            street: String,
+            city: String,
+            state: String,
+            cep: String
+        },
         rooms: [RoomSchema]
     },
     {collection: 'motel'});
