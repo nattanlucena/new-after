@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var db = mongoose.connection;
 var url = 'mongodb://localhost/after-dev';
 
-
 //###################
 db.on('error', console.error.bind(console, 'Connection error!'));
 

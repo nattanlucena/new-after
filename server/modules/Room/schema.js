@@ -15,7 +15,8 @@ var Schema = mongoose.Schema;
 var roomSchema = new Schema({
         name: String,
         roomNumber: Number,
-        price: Number
+        defaultPrice: Number,
+        quantity: Number
     },
     {collection: 'room'});
 

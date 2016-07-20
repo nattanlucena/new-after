@@ -55,6 +55,23 @@ var create = function (req, res) {
     });
 };
 
+
+var manageMotels = function (req, res) {
+    Manager.findOne({email: 'nattanlucena@gmail.com'}).populate('motels.motel').exec(function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+        if (data) {
+            res(data.motels);
+        } else {
+            res([]);
+        }
+
+    });
+};
+
 module.exports = {
-    create: create
+    create: create,
+    manageMotels: manageMotels
 };

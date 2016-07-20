@@ -11,7 +11,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
-var HASH = '632a2406bbcbcd553eec45ac14b40a0a';
+
 
 var MotelSchema = require('../Motel/schema');
 
@@ -28,7 +28,7 @@ var managerSchema = new Schema({
         password: {type: String, required: true, select: false },
         motels: [{
             motel: { type: Schema.Types.ObjectId, ref: 'Motel'},
-            created_at: { type: Date, default: Date.now }
+            createdAt: { type: Date, default: Date.now }
         }]
     },
     {collection: 'manager'});

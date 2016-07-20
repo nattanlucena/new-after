@@ -97,6 +97,13 @@ module.exports = function (app) {
         });
     });
 
+    app.delete(BASE_PATH + '/motel/remove', function (req, res) {
+       MotelController.remove(req.body, function (data) {
+           "use strict";
+           res.json(data);
+       });
+    });
+
     // =========================================================================
     // MANAGER ROUTES ==========================================================
     // =========================================================================
@@ -104,6 +111,13 @@ module.exports = function (app) {
     //create a new motel account
     app.post(BASE_PATH + '/manager/create', function (req, res) {
         ManagerController.create(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
+    app.get(BASE_PATH + '/manager/motels', function (req, res) {
+        ManagerController.manageMotels(req.query, function (data) {
+            "use strict";
             res.json(data);
         });
     });

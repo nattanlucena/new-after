@@ -15,7 +15,6 @@ var database = require('./config/db');
 var SERVER_PORT = process.env.port || 8080;
 
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride());
@@ -26,6 +25,8 @@ require('./app/routes.js')(app);
 
 //Database connection
 try {
+    //DeprecationWarning: Mongoose: mpromise issue
+    mongoose.Promise = global.Promise;
     mongoose.connect(database.url);
 } catch (err) {
     throw new Error(err);
