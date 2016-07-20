@@ -10,6 +10,7 @@ var BASE_PATH = '/api/v1';
 var UserController = require('../modules/User/controller');
 var MotelController = require('../modules/Motel/controller');
 var ManagerController = require('../modules/Manager/controller');
+var RoomController = require('../modules/Room/controller');
 
 
 module.exports = function (app) {
@@ -118,6 +119,17 @@ module.exports = function (app) {
     app.get(BASE_PATH + '/manager/motels', function (req, res) {
         ManagerController.manageMotels(req.query, function (data) {
             "use strict";
+            res.json(data);
+        });
+    });
+
+    // =========================================================================
+    // ROOM ROUTES ==========================================================
+    // =========================================================================
+
+    //create a new room
+    app.post(BASE_PATH + '/room/create', function (req, res) {
+        RoomController.create(req.body, function (data) {
             res.json(data);
         });
     });

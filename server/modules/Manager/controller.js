@@ -57,7 +57,7 @@ var create = function (req, res) {
 
 
 var manageMotels = function (req, res) {
-    Manager.findOne({email: 'nattanlucena@gmail.com'}).populate('motels.motel').exec(function (err, data) {
+    Manager.findOne({email: 'nattanelucena@gmail.com'}).populate('motels.motel').exec(function (err, data) {
         if (err) {
             var err = new Error(err);
             throw err;

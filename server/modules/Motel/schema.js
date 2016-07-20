@@ -15,20 +15,25 @@ var RoomSchema = require('../Room/schema');
 //###################
 //TODO: finalizar schema do motel
 var motelSchema = new Schema({
-        //https://docs.mongodb.com/manual/indexes/#Indexes-SparseIndexes
-        name: { type: String, required: true, unique: true, sparse: true },
+        name: String,
         address: {
             street: String,
+            number: Number,
             city: String,
             state: String,
             cep: String
         },
-        rooms: [RoomSchema],
+        rooms: [{
+            room: {type: Schema.Types.ObjectId, ref: 'Room' },
+            createdAt: { type: Date, default: Date.now }
+        }],
         createdBy: {
             manager: {type: Schema.Types.ObjectId, ref: 'Manager' },
             createdAt: { type: Date, default: Date.now }
         }
     },
     {collection: 'motel'});
+
+motelSchema.index({name:1, createdBy: 1});
 
 module.exports = motelSchema;

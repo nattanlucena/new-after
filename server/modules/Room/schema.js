@@ -14,9 +14,13 @@ var Schema = mongoose.Schema;
 //TODO: finalizar schema do quarto
 var roomSchema = new Schema({
         name: String,
-        roomNumber: Number,
         defaultPrice: Number,
-        quantity: Number
+        quantity: Number,
+        items: [{
+            item: {type: Schema.Types.ObjectId, refs: 'RoomItem'},
+            createdAt: {type: Date, default: Date.now()}
+        }],
+        motel: {type: Schema.Types.ObjectId, refs: 'Motel'}
     },
     {collection: 'room'});
 

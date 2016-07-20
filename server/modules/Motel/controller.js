@@ -12,21 +12,22 @@ var Manager = require('../Manager/model');
     }
  */
 var create = function (req, res) {
-    //TODO: analisar esta função
-    Motel.findOne({name: req.motel.name}, function (err, data) {
+
+    Manager.findOne({email: req.manager.email}, function (err, manager) {
         if (err) {
             var err = new Error(err);
             throw err;
         }
 
-        if (!data) {
-            //find the manager
-            Manager.findOne({email: req.manager.email}, function (err, manager) {
+        if (manager) {
+            //Encontra o hotel atrelado ao gerente
+            Motel.findOne({name: req.motel.name, createdBy: {manager: manager._id}}, function (err, data) {
                 if (err) {
                     var err = new Error(err);
                     throw err;
                 }
-                if(manager) {
+
+                if (!data) {
                     var motel = req.motel;
                     var createdBy = {
                         manager: manager._id,
@@ -53,18 +54,18 @@ var create = function (req, res) {
                             res(updated);
                         });
                     });
+
                 } else {
                     var message = {
-                        message: 'Manager not found!'
+                        message: 'Motel already created!'
                     };
-
                     res(message);
                 }
-            });
 
+            });
         } else {
             var message = {
-                message: 'Motel already created!'
+                message: 'Manager not found!'
             };
             res(message);
         }
