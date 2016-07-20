@@ -22,6 +22,10 @@ module.exports = function (app) {
 
     app.use(errorHandler);
 
+    // =========================================================================
+    // DEFAULT =================================================================
+    // =========================================================================
+
     app.get('/client', function (req, res) {
         res.sendFile('index.html', {root: webAppPath});
     });
@@ -54,8 +58,6 @@ module.exports = function (app) {
         UserController.create(req.body, function (data) {
             res.json(data);
         });
-
-
     });
 
     //user login
@@ -74,13 +76,24 @@ module.exports = function (app) {
        });
     });
 
+    //delete an user
     app.delete(BASE_PATH + '/user/remove', function (req, res) {
         UserController.remove(req.query, function (data) {
           res.json(data);
        });
-       
     });
 
+
+    // =========================================================================
+    // MOTEL ROUTES ============================================================
+    // =========================================================================
+
+    //create a new motel account
+    app.post(BASE_PATH + '/user/create', function (req, res) {
+        UserController.create(req.body, function (data) {
+            res.json(data);
+        });
+    });
 
     module.exports = app;
 };
