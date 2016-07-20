@@ -17,6 +17,7 @@ var reservationSchema = new Schema({
         //Confirmed, Cancelled ...
         status: String,
         createdAt: {type: Date, default: Date.now()},
+        updatedAt: Date,
         checkIn: Date,
         checkOut: Date,
         user: {type: Schema.Types.ObjectId, refs: 'User'},
