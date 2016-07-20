@@ -20,7 +20,8 @@ var roomSchema = new Schema({
             item: {type: Schema.Types.ObjectId, refs: 'RoomItem'},
             createdAt: {type: Date, default: Date.now()}
         }],
-        motel: {type: Schema.Types.ObjectId, refs: 'Motel'}
+        motel: {type: Schema.Types.ObjectId, refs: 'Motel'},
+        rate: Number
     },
     {collection: 'room'});
 
