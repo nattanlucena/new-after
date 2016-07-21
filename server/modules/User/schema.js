@@ -23,7 +23,7 @@ var userSchema = new Schema({
         reservations: [{
             reservation: {
                 type: Schema.Types.ObjectId,
-                refs: 'Reservation'
+                ref: 'Reservation'
             },
             createdAt: { type: Date, default: Date.now }
         }],

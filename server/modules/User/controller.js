@@ -151,9 +151,101 @@ var remove = function (req, res) {
 
 };
 
+
+/**
+ * Retorna todas as reservas de um determinado usuário
+ *
+ * @param req
+ * @param res
+ */
+var getReservations = function (req, res) {
+
+    User.findOne({email: req.email}).populate('reservations.reservation').exec(function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (data) {
+            res(data.reservations);
+
+        } else {
+            message = {
+                message: 'User not found!'
+            };
+            res(message);
+        }
+    });
+};
+
+/**
+ *  Retorna todas as reservas fechadas de um determinado usuário
+ */
+var getClosedReservations = function (req, res) {
+
+    User.findOne({email: req.email}).populate('reservations.reservation').exec(function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (data) {
+            var result = data.reservations.filter(function (item) {
+                return item.reservation.status === "Closed";
+            });
+
+            if (result.length > 0) {
+                res(result[0].reservation);
+            }
+            res(result);
+
+        } else {
+            message = {
+                message: 'User not found!'
+            };
+            res(message);
+        }
+    });
+};
+
+
+/**
+ * Retorna todas as reservas canceladas de um determinado usuário
+ * @param req
+ * @param res
+ */
+var getCancelledReservations = function (req, res) {
+
+    User.findOne({email: req.email}).populate('reservations.reservation').exec(function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (data) {
+            var result = data.reservations.filter(function (item) {
+               return item.reservation.status === "Cancelled";
+            });
+
+            if (result.length > 0) {
+                res(result[0].reservation);
+            }
+            res(result);
+        } else {
+            message = {
+                message: 'User not found!'
+            };
+            res(message);
+        }
+    });
+};
+
 module.exports = {
     create : create,
     login: login,
     findByEmail: findByEmail,
-    remove: remove
+    remove: remove,
+    getReservations: getReservations,
+    getClosedReservations: getClosedReservations,
+    getCancelledReservations: getCancelledReservations
 };

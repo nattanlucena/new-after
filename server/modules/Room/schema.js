@@ -20,7 +20,11 @@ var roomSchema = new Schema({
         quantity: Number,
         rate: Number,
         //room situation: available or not
-        available: {type: Boolean, default: false},
+        situation: {
+            available: {type: Boolean, default: false},
+            //Número de quartos disponíveis
+            numRooms: {type: Number, default: 0}
+        },
         motel: {type: Schema.Types.ObjectId, refs: 'Motel'},
         items: [{
             item: {type: Schema.Types.ObjectId, refs: 'RoomItem'},

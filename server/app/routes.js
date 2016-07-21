@@ -12,6 +12,7 @@ var MotelController = require('../modules/Motel/controller');
 var ManagerController = require('../modules/Manager/controller');
 var RoomController = require('../modules/Room/controller');
 var ReservationController = require('../modules/Reservation/controller');
+var FeedItemController = require('../modules/FeedItem/controller');
 
 
 module.exports = function (app) {
@@ -52,13 +53,39 @@ module.exports = function (app) {
 
     //get an user by email
     app.get(BASE_PATH + '/user/findByEmail', function (req, res) {
+        "use strict";
         UserController.findByEmail(req.query, function (data) {
+            res.json(data);
+        });
+    });
+
+    //get all reservations
+    app.get(BASE_PATH + '/user/reservations', function (req, res) {
+        "use strict";
+        UserController.getReservations(req.query, function (data) {
+            res.json(data);
+        });
+    });
+
+    //get all closed reservations
+    app.get(BASE_PATH + '/user/closedReservations', function (req, res) {
+        "use strict";
+        UserController.getClosedReservations(req.query, function (data) {
+            res.json(data);
+        });
+    });
+
+    //get all cancelled reservations
+    app.get(BASE_PATH + '/user/cancelledReservations', function (req, res) {
+        "use strict";
+        UserController.getClosedReservations(req.query, function (data) {
             res.json(data);
         });
     });
     
     //create a new user
     app.post(BASE_PATH + '/user/create', function (req, res) {
+        "use strict";
         UserController.create(req.body, function (data) {
             res.json(data);
         });
@@ -66,6 +93,7 @@ module.exports = function (app) {
 
     //user login
     app.post(BASE_PATH + '/user/login', function (req, res) {
+        "use strict";
         UserController.login(req.body, function (err, data, message) {
            if (err) {
                res.json(err);
@@ -82,6 +110,7 @@ module.exports = function (app) {
 
     //delete an user
     app.delete(BASE_PATH + '/user/remove', function (req, res) {
+        "use strict";
         UserController.remove(req.query, function (data) {
           res.json(data);
        });
@@ -120,25 +149,37 @@ module.exports = function (app) {
 
     //create a new motel account
     app.post(BASE_PATH + '/manager/create', function (req, res) {
+        "use strict";
         ManagerController.create(req.body, function (data) {
             res.json(data);
         });
     });
 
     app.get(BASE_PATH + '/manager/motels', function (req, res) {
+        "use strict";
         ManagerController.manageMotels(req.query, function (data) {
             "use strict";
             res.json(data);
         });
     });
 
+    
     // =========================================================================
     // ROOM ROUTES =============================================================
     // =========================================================================
 
     //create a new room
     app.post(BASE_PATH + '/room/create', function (req, res) {
+        "use strict";
         RoomController.create(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
+    //create a new room
+    app.post(BASE_PATH + '/room/setAvailable', function (req, res) {
+        "use strict";
+        RoomController.setAvailable(req.body, function (data) {
             res.json(data);
         });
     });
@@ -151,7 +192,20 @@ module.exports = function (app) {
 
     //create a new room
     app.post(BASE_PATH + '/reservation/create', function (req, res) {
+        "use strict";
         ReservationController.create(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
+    // =========================================================================
+    // FEED ROUTES =============================================================
+    // =========================================================================
+
+    //create a new room
+    app.get(BASE_PATH + '/feed/list', function (req, res) {
+        "use strict";
+        FeedItemController.feedList(function (data) {
             res.json(data);
         });
     });
