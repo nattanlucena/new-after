@@ -16,6 +16,7 @@ var RoomSchema = require('../Room/schema');
 //TODO: finalizar schema do motel
 var motelSchema = new Schema({
         name: String,
+        description: String,
         address: {
             street: String,
             number: Number,
