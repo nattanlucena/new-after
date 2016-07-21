@@ -11,6 +11,7 @@ var UserController = require('../modules/User/controller');
 var MotelController = require('../modules/Motel/controller');
 var ManagerController = require('../modules/Manager/controller');
 var RoomController = require('../modules/Room/controller');
+var ReservationController = require('../modules/Reservation/controller');
 
 
 module.exports = function (app) {
@@ -93,16 +94,24 @@ module.exports = function (app) {
 
     //create a new motel account
     app.post(BASE_PATH + '/motel/create', function (req, res) {
+        "use strict";
         MotelController.create(req.body, function (data) {
             res.json(data);
         });
     });
 
     app.delete(BASE_PATH + '/motel/remove', function (req, res) {
+        "use strict";
        MotelController.remove(req.body, function (data) {
-           "use strict";
            res.json(data);
        });
+    });
+
+    app.get(BASE_PATH + '/motel/rooms', function (req, res) {
+        "use strict";
+        MotelController.getRooms(req.query, function (data) {
+            res.json(data);
+        });
     });
 
     // =========================================================================
@@ -124,7 +133,7 @@ module.exports = function (app) {
     });
 
     // =========================================================================
-    // ROOM ROUTES ==========================================================
+    // ROOM ROUTES =============================================================
     // =========================================================================
 
     //create a new room
@@ -133,6 +142,20 @@ module.exports = function (app) {
             res.json(data);
         });
     });
+
+
+
+    // =========================================================================
+    // RESERVATION ROUTES ======================================================
+    // =========================================================================
+
+    //create a new room
+    app.post(BASE_PATH + '/reservation/create', function (req, res) {
+        ReservationController.create(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
 
     module.exports = app;
 };

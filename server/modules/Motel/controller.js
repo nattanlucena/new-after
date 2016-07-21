@@ -4,6 +4,7 @@
 
 var Motel = require('./model');
 var Manager = require('../Manager/model');
+var GenerateID = require('../Utils/GenerateID');
 
 /*
     req: {
@@ -13,36 +14,43 @@ var Manager = require('../Manager/model');
  */
 var create = function (req, res) {
 
+    //Localiza o gerente que está logado, pelo email
     Manager.findOne({email: req.manager.email}, function (err, manager) {
         if (err) {
             var err = new Error(err);
             throw err;
         }
-
+        //Caso encontre, realiza a verificação se o Motel já está cadastrado
         if (manager) {
-            //Encontra o hotel atrelado ao gerente
-            Motel.findOne({name: req.motel.name, createdBy: {manager: manager._id}}, function (err, data) {
+            //Procura o Motel pelo nome e pelo cep (só deverá ter um motel para cada cep)
+            Motel.findOne({'name': req.motel.name, 'address.cep': req.motel.address.cep}, function (err, data) {
                 if (err) {
                     var err = new Error(err);
                     throw err;
                 }
 
+                //Caso não encontre Motel cadastrado com os mesmos dados da busca, prossegue com a criação
                 if (!data) {
                     var motel = req.motel;
+                    //Cria um ID único
+                    var uniqueID = GenerateID.generateUUID().generate();
                     var createdBy = {
-                        manager: manager._id,
-                        createdAt: Date.now()
+                        manager: manager._id
                     };
+                    motel.uniqueID = uniqueID;
+                    //adiciona a referência do manager
                     motel.createdBy = createdBy;
+                    //Código do Motel para ser visualizado na view
+                    motel.code = uniqueID.substring(0, 8);
                     Motel(motel).save(function (err, data) {
                         if (err) {
                             var err = new Error(err);
                             throw err;
                         }
-                        //Update manager's motel document inserting the motel id
+                        //Atualiza o registro do manager com a referência do hotel e a data de criação
                         var motel = {
                             motel: data._id,
-                            createdAt: Date.now()
+                            createdAt: new Date(data.createdAt)
                         };
                         manager.motels.push(motel);
                         manager.save(function (err, updated) {
@@ -56,6 +64,7 @@ var create = function (req, res) {
                     });
 
                 } else {
+                    //Caso encontre, retorna uma mensagem de Motel já cadastrado
                     var message = {
                         message: 'Motel already created!'
                     };
@@ -131,7 +140,30 @@ var remove = function (req, res) {
 
 };
 
+/**
+ * Retorna todos os quartos de um Motel específico, localizado a partir do uniqueID
+ *
+ * @param req
+ * @param res
+ */
+var getRooms = function (req, res) {
+    Motel.findOne({uniqueID: req.uniqueID}).populate('rooms.room').exec(function (err, data) {
+        "use strict";
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (data) {
+            res(data.rooms);
+        } else {
+            res([]);
+        }
+    });
+};
+
 module.exports = {
     create: create,
-    remove: remove
+    remove: remove,
+    getRooms: getRooms
 };

@@ -20,6 +20,13 @@ var userSchema = new Schema({
         name: String,
         email: {type: String, required: true, index: { unique: true } },
         password: {type: String, required: true},
+        reservations: [{
+            reservation: {
+                type: Schema.Types.ObjectId,
+                refs: 'Reservation'
+            },
+            createdAt: { type: Date, default: Date.now }
+        }],
         //store how many consecutive failures
         loginAttempts: { type: Number, required: true, default: 0 },
         //store a timestamp indicating when we may stop ignoring login attempts.

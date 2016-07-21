@@ -17,7 +17,7 @@ var Motel = require('../Motel/model');
  */
 var create = function (req, res) {
 
-    Motel.findOne({_id: req.motel._id}, function (err, motel) {
+    Motel.findOne({uniqueID: req.motel.uniqueID}, function (err, motel) {
         if (err) {
             var err = new Error(err);
             throw err;

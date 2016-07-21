@@ -15,6 +15,8 @@ var RoomSchema = require('../Room/schema');
 //###################
 //TODO: finalizar schema do motel
 var motelSchema = new Schema({
+        uniqueID: String,
+        code: String,
         name: String,
         description: String,
         address: {
@@ -29,12 +31,12 @@ var motelSchema = new Schema({
             createdAt: { type: Date, default: Date.now }
         }],
         createdBy: {
-            manager: {type: Schema.Types.ObjectId, ref: 'Manager' },
-            createdAt: { type: Date, default: Date.now }
-        }
+            manager: {type: Schema.Types.ObjectId, ref: 'Manager' }
+        },
+        createdAt: { type: Date, default: Date.now }
     },
     {collection: 'motel'});
 
-motelSchema.index({name:1, createdBy: 1});
+motelSchema.index({uniqueID:1});
 
 module.exports = motelSchema;

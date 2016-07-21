@@ -15,6 +15,7 @@ var Schema = mongoose.Schema;
 var roomSchema = new Schema({
         name: String,
         description: String,
+        type: String,
         price: Number,
         quantity: Number,
         rate: Number,
@@ -24,7 +25,12 @@ var roomSchema = new Schema({
         items: [{
             item: {type: Schema.Types.ObjectId, refs: 'RoomItem'},
             createdAt: {type: Date, default: Date.now()}
-        }]
+        }],
+        createdAt: {type: Date, default: Date.now()},
+        updatedAt: {
+            type: Date,
+            default: Date.now
+        }
     },
     {collection: 'room'});
 
