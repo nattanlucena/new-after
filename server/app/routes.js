@@ -39,7 +39,7 @@ module.exports = function (app) {
     app.use('/app', express.static(rootPath + webAppPath));
 
     app.get('/', function (req, res) {
-        res.sendFile('index.html', {root: rootPath + '/client'});
+        res.sendFile('site-index.html', {root: rootPath + '/client'});
     });
 
     app.get(BASE_PATH, function (req, res) {
