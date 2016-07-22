@@ -3,8 +3,11 @@
  */
 
 var express = require('express');
-var webAppPath = '../../client/app';
+var path = require('path');
+var rootPath = path.normalize(__dirname + '/../..');
 var BASE_PATH = '/api/v1';
+var webAppPath = '/client/app';
+var webAppPublicPath = '/client/public';
 
 //controllers
 var UserController = require('../modules/User/controller');
@@ -13,7 +16,6 @@ var ManagerController = require('../modules/Manager/controller');
 var RoomController = require('../modules/Room/controller');
 var ReservationController = require('../modules/Reservation/controller');
 var FeedItemController = require('../modules/FeedItem/controller');
-
 
 module.exports = function (app) {
 
@@ -30,9 +32,14 @@ module.exports = function (app) {
     // =========================================================================
     // DEFAULT =================================================================
     // =========================================================================
+    
+    // Use static
+    app.use('/public', express.static(rootPath + webAppPublicPath));
+    app.use('/libs', express.static(rootPath + '/libs'));
+    app.use('/app', express.static(rootPath + webAppPath));
 
-    app.get('/client', function (req, res) {
-        res.sendFile('index.html', {root: webAppPath});
+    app.get('/', function (req, res) {
+        res.sendFile('index.html', {root: rootPath + '/client'});
     });
 
     app.get(BASE_PATH, function (req, res) {
@@ -40,10 +47,10 @@ module.exports = function (app) {
         res.end('Server On');
     });
 
-    app.get('/', function (req, res) {
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.end('Server On');
+    app.get('/*', function (req, res) {
+        res.redirect('/');
     });
+
 
 
 

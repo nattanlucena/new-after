@@ -12,7 +12,7 @@ var app = express();
 var http = require('http').Server(app);
 var database = require('./config/db');
 
-var SERVER_PORT = process.env.port || 8080;
+var SERVER_PORT = process.env.port || 3000;
 
 
 app.use(bodyParser.json());
