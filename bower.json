@@ -1,16 +1,16 @@
 {
-  "name": "AfterWeb",
-  "version": "0.0.0",
+  "name": "after-web",
+  "version": "1.0.0",
   "homepage": "https://github.com/rogersdk/new-after",
   "authors": [
     "Rogério Nóbrega <rogeriocnobrega@gmail.com>"
   ],
   "description": "This is the Web App After",
-  "main": "app.js",
+  "main": "client/app.js",
   "moduleType": [
     "node"
   ],
-  "license": "MIT",
+  "license": "ISC",
   "private": true,
   "ignore": [
     "**/.*",

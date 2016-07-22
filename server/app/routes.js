@@ -4,16 +4,15 @@
 
 var express = require('express');
 var path = require('path');
-var webAppPath = '/client/app';
-var BASE_PATH = '/api/v1';
-var webAppPublicPath = webAppPath + '/public';
 var rootPath = path.normalize(__dirname + '/../..');
+var BASE_PATH = '/api/v1';
+var webAppPath = '/client/app';
+var webAppPublicPath = '/client/public';
 
 //controllers
 var UserController = require('../modules/User/controller');
 var MotelController = require('../modules/Motel/controller');
 var ManagerController = require('../modules/Manager/controller');
-
 
 module.exports = function (app) {
 
@@ -33,9 +32,11 @@ module.exports = function (app) {
     
     // Use static
     app.use('/public', express.static(rootPath + webAppPublicPath));
+    app.use('/libs', express.static(rootPath + '/libs'));
+    app.use('/app', express.static(rootPath + webAppPath));
 
     app.get('/', function (req, res) {
-        res.sendFile('index.html', {root: rootPath + webAppPath});
+        res.sendFile('index.html', {root: rootPath + '/client'});
     });
 
     app.get(BASE_PATH, function (req, res) {
