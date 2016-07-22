@@ -37,6 +37,6 @@ var motelSchema = new Schema({
     },
     {collection: 'motel'});
 
-motelSchema.index({uniqueID:1});
+motelSchema.index({uniqueID:1}, {unique:true, sparse: 1});
 
 module.exports = motelSchema;

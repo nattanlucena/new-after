@@ -155,6 +155,13 @@ module.exports = function (app) {
         });
     });
 
+    app.delete(BASE_PATH + '/manager/remove', function (req, res) {
+        "use strict";
+        ManagerController.remove(req.body, function (data) {
+           res.json(data);
+        });
+    });
+
     app.get(BASE_PATH + '/manager/motels', function (req, res) {
         "use strict";
         ManagerController.manageMotels(req.query, function (data) {

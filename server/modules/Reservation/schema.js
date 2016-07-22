@@ -43,4 +43,7 @@ var reservationSchema = new Schema({
     },
     {collection: 'reservation'});
 
+//a chave de cada reserva será o Código da Reserva + o usuário
+reservationSchema.index({code: 1, user: 1}, {unique: 1, sparse: 1});
+
 module.exports = reservationSchema;

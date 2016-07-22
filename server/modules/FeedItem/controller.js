@@ -6,7 +6,7 @@ var FeedItem = require('./model');
 
 
 /**
- * 
+ *
  * @param res
  */
 var feedList = function (res) {

@@ -3,6 +3,7 @@
  */
 
 var Manager = require('./model');
+var Motel = require('../Motel/model');
 
 /**
  * Verify if a manager already exists. Case false, create a new manager. Case true, return
@@ -45,7 +46,7 @@ var create = function (req, res) {
                     var err = new Error(err);
                     throw err;
                 }
-                //User successfully created
+                //Manaeger successfully created
                 var message = {
                     message: 'The manager account was created successfully!'
                 };
@@ -55,6 +56,59 @@ var create = function (req, res) {
     });
 };
 
+
+var remove = function (req, res) {
+    "use strict";
+    Manager.findOneAndRemove({email: req.email}, function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        //Gerente não localizado
+        if (data === null) {
+            var message = {
+                message: 'Manager not found!'
+            };
+            res(message);
+        } else {
+            //Filtra os motéis referenciados no registro do gerente
+            var motelsIdsArr = data.motels.map(function (motel) {
+                var id = {
+                    _id: motel.motel
+                };
+                return id;
+            });
+
+            var message = {
+                message: 'The manager account was removed successfully!'
+            };
+            if (motelsIdsArr.length > 0) {
+                //Procura os motéis a partir de seu ID
+                Motel.find({$and: motelsIdsArr}, function (err, data) {
+                    if (err) {
+                        var err = new Error(err);
+                        throw err;
+                    }
+                    //Atualiza cada motel removendo a referência do gerente removido
+                    data.forEach(function (motel) {
+                        motel.createdBy = undefined;
+                        motel.save(function (err) {
+                            if (err) {
+                                var err = new Error(err);
+                                throw err;
+                            }
+                        });
+                    });
+
+                    res(message);
+                });
+            } else {
+                res(message);
+            }
+        }
+    });
+};
 
 var manageMotels = function (req, res) {
     Manager.findOne({email: 'nattanelucena@gmail.com'}).populate('motels.motel').exec(function (err, data) {
@@ -73,5 +127,6 @@ var manageMotels = function (req, res) {
 
 module.exports = {
     create: create,
+    remove: remove,
     manageMotels: manageMotels
 };
