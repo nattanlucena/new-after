@@ -154,7 +154,7 @@ module.exports = function (app) {
     // MANAGER ROUTES ==========================================================
     // =========================================================================
 
-    //create a new motel account
+    //create a new manager account
     app.post(BASE_PATH + '/manager/create', function (req, res) {
         "use strict";
         ManagerController.create(req.body, function (data) {
@@ -162,6 +162,7 @@ module.exports = function (app) {
         });
     });
 
+    //delete a motel account
     app.delete(BASE_PATH + '/manager/remove', function (req, res) {
         "use strict";
         ManagerController.remove(req.body, function (data) {
@@ -169,6 +170,31 @@ module.exports = function (app) {
         });
     });
 
+    //update a manager account
+    app.put(BASE_PATH + '/manager/update/account', function (req, res) {
+        "use strict";
+        ManagerController.update(req.body, function (data) {
+           res.json(data);
+        });
+    });
+
+    //update manager email address
+    app.put(BASE_PATH + '/manager/update/email', function (req, res) {
+        "use strict";
+        ManagerController.updateEmail(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
+    //update manager password
+    app.put(BASE_PATH + '/manager/update/password', function (req, res) {
+        "use strict";
+        ManagerController.updatePassword(req.body, function (data) {
+            res.json(data);
+        });
+    });
+
+    //get all manager's motel
     app.get(BASE_PATH + '/manager/motels', function (req, res) {
         "use strict";
         ManagerController.manageMotels(req.query, function (data) {

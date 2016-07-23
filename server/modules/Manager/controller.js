@@ -115,6 +115,183 @@ var remove = function (req, res) {
     });
 };
 
+/**
+ * Atualiza o registro de um determinado gerente
+ * @param req
+ * @param res
+ */
+var update = function (req, res) {
+    var query = {email: req.email};
+    var update = {};
+    var options = {new: true};
+
+    /**
+     * Monta a query
+     */
+    if (req.hasOwnProperty('name')) {
+        console.log(typeof req.name);
+        var name = {
+            first: req.name.hasOwnProperty('first') ? req.name.first : undefined ,
+            last: req.name.hasOwnProperty('last') ? req.name.last : undefined
+        };
+        update.name = name;
+    }
+
+    if (req.hasOwnProperty('sex')) {
+        update.sex = req.sex;
+    }
+
+    if (req.hasOwnProperty('phone')) {
+        update.phone = req.phone;
+    }
+
+
+    Manager.findOneAndUpdate(query, update, options, function (err, data) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (data) {
+            console.log(data);
+            var message = {
+                message: 'Manager updated!'
+            };
+            res(message);
+        } else {
+            var message = {
+                message: 'Manager not found!'
+            };
+            res(message);
+        }
+    });
+
+
+};
+
+
+/**
+ * ##########################
+ * Example:
+ *      req: {
+ *          email: 'oldEmail',
+ *          newEmail: 'newEmail'
+ *      }
+ * ##########################
+ * @param req
+ * @param res
+ */
+var updateEmail = function (req, res) {
+
+    Manager.findOne({email: req.email}, function (err, manager) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (manager) {
+
+            Manager.findOne({email: req.newEmail}, function (err, emailExists) {
+
+                if (err) {
+                    var err = new Error(err);
+                    throw err;
+                }
+
+                if (emailExists) {
+                    var message = {
+                        message: 'Email address already in use!'
+                    };
+                    res(message);
+                }
+
+                manager.email = req.newEmail;
+                manager.save(function (err) {
+
+                    if (err) {
+                        var err = new Error(err);
+                        throw err;
+                    }
+
+                    var message = {
+                        message: 'Email address updated!'
+                    };
+                    res(message);
+
+                });
+            });
+
+        } else {
+            var message = {
+                message: 'Manager not found!'
+            };
+            res(message);
+        }
+    });
+    
+};
+
+/**
+ * ##########################
+ * Example:
+ *      req: {
+ *          email: 'email'
+ *          oldPassword: 'oldPassword',
+ *          newPassword: 'newPassword'
+ *      }
+ *  ##########################
+ * @param req
+ * @param res
+ */
+var updatePassword = function (req, res) {
+    //Procura o registro baseado no email e retorna a senha para a verificação
+    Manager.findOne({email: req.email}, 'password',function (err, manager) {
+        if (err) {
+            var err = new Error(err);
+            throw err;
+        }
+
+        if (manager) {
+            //compara a senha antiga enviada pelo gerente, é a mesma cadastrada no banco
+            manager.comparePassword(req.oldPassword, manager.password, function (err, isMatch) {
+                if (err) {
+                    if (err) {
+                        var err = new Error(err);
+                        throw err;
+                    }
+                }
+
+                //Caso a comparação seja verdadeira, atualiza a senha e salva a alteração no banco
+                if (isMatch) {
+                    manager.password = req.newPassword;
+                    manager.save(function (err) {
+                        if (err) {
+                            var err = new Error(err);
+                            throw err;
+                        }
+                        var message = {
+                            message: 'Password updated!'
+                        };
+                        res(message);
+                    });
+                } else {
+                    //Caso a comparação retorne false, envia mensagem de erro à view
+                    var message = {
+                        message: 'Password don\'t macth!'
+                    };
+                    res(message);
+                }
+            });
+
+        } else {
+            var message = {
+                message: 'Manager not found!'
+            };
+            res(message);
+        }
+    });
+};
+
 
 /**
  * Retorna uma lista de todos os Motéis atrelados a conta do gerente
@@ -138,6 +315,9 @@ var manageMotels = function (req, res) {
 
 module.exports = {
     create: create,
+    update: update,
+    updateEmail: updateEmail,
+    updatePassword: updatePassword,
     remove: remove,
     manageMotels: manageMotels
 };
