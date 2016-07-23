@@ -85,10 +85,12 @@ var create = function (req, res) {
 /**
     Remove a motel and update his manager document, removing the motel reference 
     from motels array in manager collection
- req: {
- motel: {},
- manager: {}
- }
+    #################
+     req: {
+        motel: {},
+        manager: {}
+     }
+    ################
  */
 var remove = function (req, res) {
     Manager.findOne({email: req.manager.email}, function (err, manager) {

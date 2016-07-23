@@ -57,6 +57,11 @@ var create = function (req, res) {
 };
 
 
+/**
+ *  Remove o gerente e atualiza os registros de cada motel gerenciado pelo gerente removido
+ * @param req
+ * @param res
+ */
 var remove = function (req, res) {
     "use strict";
     Manager.findOneAndRemove({email: req.email}, function (err, data) {
@@ -110,6 +115,12 @@ var remove = function (req, res) {
     });
 };
 
+
+/**
+ * Retorna uma lista de todos os Motéis atrelados a conta do gerente
+ * @param req
+ * @param res
+ */
 var manageMotels = function (req, res) {
     Manager.findOne({email: 'nattanelucena@gmail.com'}).populate('motels.motel').exec(function (err, data) {
         if (err) {
