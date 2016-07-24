@@ -26,9 +26,7 @@ var managerSchema = new Schema({
         phone: String,
         email: {type: String, required: true, index: { unique: true } },
         password: {type: String, required: true, select: false },
-        motels: [{
-            motel: { type: Schema.Types.ObjectId, ref: 'Motel'}
-        }]
+        motels: [{ type: Schema.Types.ObjectId, ref: 'Motel'}]
     },
     {collection: 'manager'});
 

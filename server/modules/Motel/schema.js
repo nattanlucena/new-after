@@ -27,8 +27,7 @@ var motelSchema = new Schema({
             cep: String
         },
         rooms: [{room: {type: Schema.Types.ObjectId, ref: 'Room' }}],
-        createdBy: { manager: {type: Schema.Types.ObjectId, ref: 'Manager' }
-        },
+        createdBy:  {type: Schema.Types.ObjectId, ref: 'Manager'},
         createdAt: { type: Date, default: Date.now }
     },
     {collection: 'motel'});

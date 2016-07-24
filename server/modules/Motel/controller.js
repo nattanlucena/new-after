@@ -12,73 +12,82 @@ var GenerateID = require('../Utils/GenerateID');
         manager: {}
     }
  */
-var create = function (req, res) {
+var create = function (req, res, next) {
+    var req = req.body;
 
     //Localiza o gerente que está logado, pelo email
     Manager.findOne({email: req.manager.email}, function (err, manager) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
+
         //Caso encontre, realiza a verificação se o Motel já está cadastrado
         if (manager) {
+
             //Procura o Motel pelo nome e pelo cep (só deverá ter um motel para cada cep)
-            Motel.findOne({'name': req.motel.name, 'address.cep': req.motel.address.cep}, function (err, data) {
+            Motel.findOne({name: req.motel.name, 'address.cep': req.motel.address.cep}, function (err, data) {
+
                 if (err) {
-                    var err = new Error(err);
-                    throw err;
+                    res.status(500);
+                    res.json(handleError(err));
                 }
 
                 //Caso não encontre Motel cadastrado com os mesmos dados da busca, prossegue com a criação
                 if (!data) {
+
                     var motel = req.motel;
                     //Cria um ID único
                     var uniqueID = GenerateID.generateUUID().generate();
-                    var createdBy = {
-                        manager: manager._id
-                    };
                     motel.uniqueID = uniqueID;
                     //adiciona a referência do manager
-                    motel.createdBy = createdBy;
+                    motel.createdBy = manager._id;
                     //Código do Motel para ser visualizado na view
                     motel.code = uniqueID.substring(0, 8);
+
                     Motel(motel).save(function (err, data) {
                         if (err) {
-                            var err = new Error(err);
-                            throw err;
+                            res.status(500);
+                            res.json(handleError(err));
                         }
                         //Atualiza o registro do manager com a referência do hotel e a data de criação
-                        var motel = {
-                            motel: data._id,
-                            createdAt: new Date(data.createdAt)
-                        };
-                        manager.motels.push(motel);
+                        manager.motels.push(data._id);
                         manager.save(function (err, updated) {
                             if (err) {
-                                var err = new Error(err);
-                                throw err;
+                                res.status(500);
+                                res.json(handleError(err));
                             }
                             //return the manager updated document
-                            res(updated);
+                            var message = {
+                                type: true,
+                                message: 'New motel created successfully!',
+                                data: updated
+                            };
+                            res.json(message);
+                           //res(updated);
                         });
                     });
 
                 } else {
                     //Caso encontre, retorna uma mensagem de Motel já cadastrado
                     var message = {
-                        message: 'Motel already created!'
+                        type: false,
+                        message: 'Motel already created!',
+                        data: data.name
                     };
-                    res(message);
+                    res.json(message);
                 }
 
             });
         } else {
             var message = {
+                type: false,
                 message: 'Manager not found!'
             };
-            res(message);
+            res.json(message);
         }
     });
+
 };
 
 
@@ -93,49 +102,57 @@ var create = function (req, res) {
     ################
  */
 var remove = function (req, res) {
+    var req = req.body;
+
     Manager.findOne({email: req.manager.email}, function (err, manager) {
         "use strict";
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (manager) {
-            Motel.findOneAndRemove({_id: req.motel._id}, function (err, data) {
+            Motel.findOneAndRemove({uniqueID: req.motel.uniqueID}, function (err, removedMotel) {
                 if (err) {
-                    var err = new Error(err);
-                    throw err;
+                    res.status(500);
+                    res.json(handleError(err));
                 }
                 if (data) {
-                    manager.motels.forEach(function (item) {
-                       if (String(item.motel) === req.motel._id) {
-                           //remove the motel from manager's motels array
-                           var idx = manager.motels.indexOf(item);
+                    manager.motels.forEach(function (motelId) {
+                       if (motelId.equals(removedMotel._id)) {
+                           //Remove a referência do motel no registro do gerente
+                           var idx = manager.motels.indexOf(motelId);
                            if (idx > -1) {
                                manager.motels.splice(idx, 1);
                                manager.save(function (err, updated) {
                                    if (err) {
-                                       var err = new Error(err);
-                                       throw err;
+                                       res.status(500);
+                                       res.json(handleError(err));
                                    }
-                                   //return the manager updated document
-                                   res(updated);
+
+                                   var message = {
+                                       type: true,
+                                       message: 'The motel was removed!'
+                                   };
+                                   res.json(message);
                                });
                            }
                        }
                     });
                 } else {
                     var message = {
+                        type: false,
                         message: "Motel not found!"
                     };
-                    res(message);
+                    res.json(message);
                 }
             });
         } else {
             var message = {
+                type: false,
                 message: "Manager not found!"
             };
-            res(message);
+            res.json(message);
         }
 
     });
@@ -149,20 +166,28 @@ var remove = function (req, res) {
  * @param res
  */
 var getRooms = function (req, res) {
-    Motel.findOne({uniqueID: req.uniqueID}).populate('rooms.room').exec(function (err, data) {
+    Motel.findOne({uniqueID: req.uniqueID}, function (err, data) {
         "use strict";
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (data) {
-            res(data.rooms);
+            res.json(data.rooms);
         } else {
-            res([]);
+            res.json([]);
         }
     });
 };
+
+
+function handleError(err) {
+    return {
+        type: false,
+        data: err
+    };
+}
 
 module.exports = {
     create: create,

@@ -129,27 +129,12 @@ module.exports = function (app) {
     // MOTEL ROUTES ============================================================
     // =========================================================================
 
-    //create a new motel account
-    app.post(BASE_PATH + '/motel/create', function (req, res) {
-        "use strict";
-        MotelController.create(req.body, function (data) {
-            res.json(data);
-        });
-    });
-
-    app.delete(BASE_PATH + '/motel/remove', function (req, res) {
-        "use strict";
-       MotelController.remove(req.body, function (data) {
-           res.json(data);
-       });
-    });
-
-    app.get(BASE_PATH + '/motel/rooms', function (req, res) {
-        "use strict";
-        MotelController.getRooms(req.query, function (data) {
-            res.json(data);
-        });
-    });
+    //create a new motel
+    app.post(BASE_PATH + '/motel/create', MotelController.create);
+    //remove a motel
+    app.delete(BASE_PATH + '/motel/remove', MotelController.remove);
+    //get rooms from a motel
+    app.get(BASE_PATH + '/motel/rooms', MotelController.getRooms);
 
     // =========================================================================
     // MANAGER ROUTES ==========================================================
