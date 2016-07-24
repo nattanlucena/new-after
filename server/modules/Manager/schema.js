@@ -20,15 +20,14 @@ var MotelSchema = require('../Motel/schema');
 var managerSchema = new Schema({
         name: {
             first: {type: String, required: true},
-            last: {type: String, required: true}
+            last: {type: String, required: false}
         },
         sex: {type: String, required: true},
         phone: String,
         email: {type: String, required: true, index: { unique: true } },
         password: {type: String, required: true, select: false },
         motels: [{
-            motel: { type: Schema.Types.ObjectId, ref: 'Motel'},
-            createdAt: { type: Date, default: Date.now }
+            motel: { type: Schema.Types.ObjectId, ref: 'Motel'}
         }]
     },
     {collection: 'manager'});

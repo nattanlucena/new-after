@@ -11,6 +11,7 @@ var FeedItem = require('./model');
  */
 var feedList = function (res) {
 
+    
     //Retorna a lista de quartos disponíveis
     FeedItem.find({status: true}).populate('room motel').exec(function (err, list) {
         if (err) {

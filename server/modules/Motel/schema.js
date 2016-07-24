@@ -26,17 +26,21 @@ var motelSchema = new Schema({
             state: String,
             cep: String
         },
-        rooms: [{
-            room: {type: Schema.Types.ObjectId, ref: 'Room' },
-            createdAt: { type: Date, default: Date.now }
-        }],
-        createdBy: {
-            manager: {type: Schema.Types.ObjectId, ref: 'Manager' }
+        rooms: [{room: {type: Schema.Types.ObjectId, ref: 'Room' }}],
+        createdBy: { manager: {type: Schema.Types.ObjectId, ref: 'Manager' }
         },
         createdAt: { type: Date, default: Date.now }
     },
     {collection: 'motel'});
 
 motelSchema.index({uniqueID:1}, {unique:true, sparse: 1});
+
+var autoPopulateManager = function (next) {
+    this.populate('createdBy');
+    next();
+};
+
+motelSchema.pre('findOne', autoPopulateManager);
+motelSchema.pre('find', autoPopulateManager);
 
 module.exports = motelSchema;

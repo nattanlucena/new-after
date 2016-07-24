@@ -46,4 +46,12 @@ var reservationSchema = new Schema({
 //a chave de cada reserva será o Código da Reserva + o usuário
 reservationSchema.index({code: 1, user: 1}, {unique: 1, sparse: 1});
 
+var autoPopulateFields = function (next) {
+    this.populate('user motel room');
+    next();
+};
+
+reservationSchema.pre('findOne', autoPopulateFields).
+    pre('find', autoPopulateFields);
+
 module.exports = reservationSchema;

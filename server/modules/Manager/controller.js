@@ -299,7 +299,17 @@ var updatePassword = function (req, res) {
  * @param res
  */
 var manageMotels = function (req, res) {
-    Manager.findOne({email: 'nattanelucena@gmail.com'}).populate('motels.motel').exec(function (err, data) {
+
+    /*
+    Manager.findOne({email: req.email}, function (err, manager) {
+        console.log(manager);
+        Manager.find({_id: {$in: manager.motels}}, function (err, data) {
+           console.log(data);
+        });
+    });
+     */
+
+    Manager.findOne({email: req.email}).populate('motels').exec(function (err, data) {
         if (err) {
             var err = new Error(err);
             throw err;
@@ -311,6 +321,7 @@ var manageMotels = function (req, res) {
         }
 
     });
+
 };
 
 module.exports = {

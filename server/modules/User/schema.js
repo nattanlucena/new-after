@@ -21,11 +21,8 @@ var userSchema = new Schema({
         email: {type: String, required: true, index: { unique: true } },
         password: {type: String, required: true},
         reservations: [{
-            reservation: {
                 type: Schema.Types.ObjectId,
                 ref: 'Reservation'
-            },
-            createdAt: { type: Date, default: Date.now }
         }],
         //store how many consecutive failures
         loginAttempts: { type: Number, required: true, default: 0 },
