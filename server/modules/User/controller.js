@@ -19,41 +19,36 @@ var B = require('bluebird');
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var create = function (req, res) {
-
     User.findOne({email: req.email}, function (err, data) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (data !== null) {
             var message = {
-                message: 'User account already created!'
+                type: false,
+                message: 'User account already created'
             };
-            res(message);
+            res.json(message);
         } else {
             User(req).save(function (err, data) {
                 if (err) {
-                    if (err.name === 'ValidationError') {
-                        var message = {
-                            message: 'Verify required fields!'
-                        };
-                        res(message);
-                    }
-                    var err = new Error(err);
-                    throw err;
+                    res.status(500);
+                    res.json(handleError(err));
                 }
                 //User successfully created
                 var message = {
-                    message: 'The user account was created successfully!'
+                    type:false,
+                    message: 'The user account was created successfully',
+                    data: data
                 };
-                res(message);
+                res.json(message);
             });
         }
-
     });
-
 };
+
 
 /**
  *  Get an user by email
@@ -65,10 +60,12 @@ var create = function (req, res) {
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var findByEmail = function (req, res) {
+    var req = req.params;
+
     User.findOne({email: req.email}, function (err, data) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (data !== null) {
@@ -76,13 +73,18 @@ var findByEmail = function (req, res) {
                 name: data.name,
                 email: data.email
             };
-
-            res(result);
+            var message = {
+                type: true,
+                message: 'Success',
+                data: result
+            };
+            res.json(message);
         } else {
             var message = {
-                message: 'User not found!'
+                type: false,
+                message: 'User not found'
             };
-            res(message);
+            res.json(message);
         }
 
     });
@@ -100,26 +102,36 @@ var findByEmail = function (req, res) {
  */
 
 var login = function (req, res) {
+    var req = req.body;
     User.findOne({email: req.email}, function (err, data) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         var message;
         if (!data) {
             message = {
-                message: 'User not found!'
+                type: false,
+                message: 'User not found'
             };
-            res(message);
+            res.json(message);
         } else {
             var user = new User({email: req.email, password: req.password});
             user.comparePassword(req.password, data.password, function (err, data) {
                if (data) {
-                   res(null, data);
+                   message = {
+                       type: true,
+                       message: 'Success',
+                       data: data
+                   };
+                   res.json(message);
                } else {
-                   message = 'Incorrect password!';
-                   res(null, false, message);
+                   message = {
+                       type: false,
+                       message: 'Incorrect password'
+                   };
+                   res.json(message);
                }
             });
         }
@@ -143,32 +155,33 @@ var login = function (req, res) {
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var updateEmail = function (req, res) {
-
+    var oldEmail = req.params;
+    var newEmail = req.query;
     //Procura o registro baseado no email e retorna a senha para a verificação
-    User.findOne({email: req.email}, function (err, user) {
+    User.findOne({email: oldEmail.email}, function (err, user) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (user) {
             //Verifica se o novo email já está cadastrado na base de dados
-            User.findOne({email: req.newEmail}, function (err, emailExists) {
-
+            User.findOne({email: newEmail.email}, function (err, emailExists) {
                 if (err) {
-                    var err = new Error(err);
-                    throw err;
+                    res.status(500);
+                    res.json(handleError(err));
                 }
                 //Se o email já estiver cadastrado, retorna mensagem à view
                 if (emailExists) {
                     var message = {
-                        message: 'Email address already in use!'
+                        type: false,
+                        message: 'Email address already in use'
                     };
-                    res(message);
+                    res.json(message);
                 }
 
                 //Atualiza o usuário com o novo email
-                user.email = req.newEmail;
+                user.email = newEmail.email;
                 user.save(function (err) {
 
                     if (err) {
@@ -177,18 +190,20 @@ var updateEmail = function (req, res) {
                     }
 
                     var message = {
-                        message: 'Email address updated!'
+                        type: true,
+                        message: 'Email address updated'
                     };
-                    res(message);
+                    res.json(message);
 
                 });
             });
 
         } else {
             var message = {
-                message: 'Manager not found!'
+                type: false,
+                message: 'User not found'
             };
-            res(message);
+            res.json(message);
         }
     });
 
@@ -212,50 +227,57 @@ var updateEmail = function (req, res) {
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var updatePassword = function (req, res) {
+    var email = req.params.email;
+    var password = {
+        old: req.body.oldPassword,
+        new: req.body.newPassword
+    };
+
     //Procura o registro baseado no email e retorna a senha para a verificação
-    User.findOne({email: req.email}, 'password',function (err, user) {
+    User.findOne({email: email}, 'password',function (err, user) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (user) {
             //compara a senha antiga enviada pelo usuário, é a mesma cadastrada no banco
-            user.comparePassword(req.oldPassword, manager.password, function (err, isMatch) {
+            user.comparePassword(password.old, user.password, function (err, isMatch) {
                 if (err) {
-                    if (err) {
-                        var err = new Error(err);
-                        throw err;
-                    }
+                    res.status(500);
+                    res.json(handleError(err));
                 }
 
                 //Caso a comparação seja verdadeira, atualiza a senha e salva a alteração no banco
                 if (isMatch) {
-                    user.password = req.newPassword;
+                    user.password = password.new;
                     user.save(function (err) {
                         if (err) {
-                            var err = new Error(err);
-                            throw err;
+                            res.status(500);
+                            res.json(handleError(err));
                         }
                         var message = {
-                            message: 'Password updated!'
+                            type: true,
+                            message: 'Password updated'
                         };
-                        res(message);
+                        res.json(message);
                     });
                 } else {
                     //Caso a comparação retorne false, envia mensagem de erro à view
                     var message = {
-                        message: 'Password don\'t macth!'
+                        type: false,
+                        message: 'Password don\'t macth'
                     };
-                    res(message);
+                    res.json(message);
                 }
             });
 
         } else {
             var message = {
-                message: 'User not found!'
+                type: false,
+                message: 'User not found'
             };
-            res(message);
+            res.json(message);
         }
     });
 };
@@ -272,25 +294,29 @@ var updatePassword = function (req, res) {
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var remove = function (req, res) {
+    var req = req.body;
 
     User.findOneAndRemove({email: req.email}, function (err, data) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
         var message;
         if (data) {
             message = {
-                message: 'The user account was removed successfully!'
+                type: true,
+                message: 'The user account was removed successfully',
+                data: data
             };
 
         } else {
             message = {
-                message: 'User not found!'
+                type: false,
+                message: 'User not found'
             };
         }
 
-        res(message);
+        res.json(message);
     });
 
 };
@@ -306,21 +332,28 @@ var remove = function (req, res) {
  *                          as reservas do usuário
  */
 var getReservations = function (req, res) {
+    var req = req.params;
 
-    User.findOne({email: req.email}).populate('reservations.reservation').exec(function (err, data) {
+    User.findOne({email: req.email}).populate('reservations').exec(function (err, data) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
         if (data) {
-            res(data.reservations);
+            var message = {
+                type: true,
+                message: 'Success',
+                data: data.reservations
+            };
+            res.json(message);
 
         } else {
             message = {
-                message: 'User not found!'
+                type: false,
+                message: 'User not found'
             };
-            res(message);
+            res.json(message);
         }
     });
 };
@@ -335,26 +368,27 @@ var getReservations = function (req, res) {
  *                          as reservas fechadas do usuário
  */
 var getClosedReservations = function (req, res) {
+    var req = req.params;
 
-    User.findOne({email: req.email}).populate('reservations.reservation').exec(function (err, data) {
+    User.findOne({email: req.email}).populate('reservations').exec(function (err, user) {
         if (err) {
             var err = new Error(err);
             throw err;
         }
 
-        if (data) {
-            var result = data.reservations.filter(function (item) {
-                return item.reservation.status === "Closed";
+        if (user) {
+            var result = user.reservations.filter(function (item) {
+                return item.status === "Closed";
             });
 
             if (result.length > 0) {
-                res(result[0].reservation);
+                res.json(result[0]);
             }
-            res(result);
+            res.json(result);
 
         } else {
             message = {
-                message: 'User not found!'
+                message: 'User not found'
             };
             res(message);
         }
@@ -373,35 +407,56 @@ var getClosedReservations = function (req, res) {
  */
 var getCancelledReservations = function (req, res) {
 
-    User.findOne({email: req.email}).populate('reservations.reservation').exec(function (err, data) {
+    User.findOne({email: req.email}).populate('reservations').exec(function (err, user) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
-        if (data) {
-            var result = data.reservations.filter(function (item) {
-               return item.reservation.status === "Cancelled";
+        if (user) {
+            var result = user.reservations.filter(function (item) {
+               return item.status === "Cancelled";
             });
 
             if (result.length > 0) {
-                res(result[0].reservation);
+                res.json(result[0]);
             }
-            res(result);
+            var message = {
+                type: true,
+                message: "Success",
+                data: result
+            };
+            res.json(message);
         } else {
             message = {
-                message: 'User not found!'
+                type: false,
+                message: 'User not found'
             };
-            res(message);
+            res.json(message);
         }
     });
 };
+
+
+/**
+ * Error handler
+ * @param err
+ * @returns {{type: boolean, data: *}}
+ */
+function handleError(err) {
+    return {
+        type: false,
+        data: err
+    };
+}
 
 module.exports = {
     create : create,
     login: login,
     findByEmail: findByEmail,
     remove: remove,
+    updateEmail: updateEmail,
+    updatePassword: updatePassword,
     getReservations: getReservations,
     getClosedReservations: getClosedReservations,
     getCancelledReservations: getCancelledReservations

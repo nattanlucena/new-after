@@ -12,7 +12,7 @@ var GenerateID = require('../Utils/GenerateID');
         manager: {}
     }
  */
-var create = function (req, res, next) {
+var create = function (req, res) {
     var req = req.body;
 
     //Localiza o gerente que está logado, pelo email
@@ -182,6 +182,11 @@ var getRooms = function (req, res) {
 };
 
 
+/**
+ * Error handler
+ * @param err
+ * @returns {{type: boolean, data: *}}
+ */
 function handleError(err) {
     return {
         type: false,

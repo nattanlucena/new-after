@@ -46,13 +46,11 @@ module.exports = function (app) {
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end('Server On');
     });
-/*
+   /*
     app.get('/*', function (req, res) {
         res.redirect('/');
     });
     */
-
-
 
 
     // =========================================================================
@@ -60,69 +58,23 @@ module.exports = function (app) {
     // =========================================================================
 
     //get an user by email
-    app.get(BASE_PATH + '/user/findByEmail', function (req, res) {
-        "use strict";
-        UserController.findByEmail(req.query, function (data) {
-            res.json(data);
-        });
-    });
-
+    app.get(BASE_PATH + '/users/:email', UserController.findByEmail);
     //get all reservations
-    app.get(BASE_PATH + '/user/reservations', function (req, res) {
-        "use strict";
-        UserController.getReservations(req.query, function (data) {
-            res.json(data);
-        });
-    });
-
+    app.get(BASE_PATH + '/users/:email/reservations/',  UserController.getReservations);
     //get all closed reservations
-    app.get(BASE_PATH + '/user/closedReservations', function (req, res) {
-        "use strict";
-        UserController.getClosedReservations(req.query, function (data) {
-            res.json(data);
-        });
-    });
-
+    app.get(BASE_PATH + '/users/closedReservations', UserController.getClosedReservations);
     //get all cancelled reservations
-    app.get(BASE_PATH + '/user/cancelledReservations', function (req, res) {
-        "use strict";
-        UserController.getClosedReservations(req.query, function (data) {
-            res.json(data);
-        });
-    });
-    
+    app.get(BASE_PATH + '/users/cancelledReservations', UserController.getClosedReservations);
     //create a new user
-    app.post(BASE_PATH + '/user/create', function (req, res) {
-        "use strict";
-        UserController.create(req.body, function (data) {
-            res.json(data);
-        });
-    });
-
+    app.post(BASE_PATH + '/users/create', UserController.create);
     //user login
-    app.post(BASE_PATH + '/user/login', function (req, res) {
-        "use strict";
-        UserController.login(req.body, function (err, data, message) {
-           if (err) {
-               res.json(err);
-           }
-           //return true if login is correct
-           if (data) {
-               res.json(data);
-           }
-           if (message) {
-              res.json(message);
-           }
-       });
-    });
-
+    app.post(BASE_PATH + '/users/login', UserController.login);
+    //update email
+    app.put(BASE_PATH + '/users/:email/update/email', UserController.updateEmail);
+    //update password
+    app.put(BASE_PATH + '/users/:email/update/password', UserController.updatePassword);
     //delete an user
-    app.delete(BASE_PATH + '/user/remove', function (req, res) {
-        "use strict";
-        UserController.remove(req.query, function (data) {
-          res.json(data);
-       });
-    });
+    app.delete(BASE_PATH + '/users/remove',  UserController.remove);
 
 
     // =========================================================================
@@ -136,58 +88,30 @@ module.exports = function (app) {
     //get rooms from a motel
     app.get(BASE_PATH + '/motel/rooms', MotelController.getRooms);
 
+
+
     // =========================================================================
     // MANAGER ROUTES ==========================================================
     // =========================================================================
 
     //create a new manager account
-    app.post(BASE_PATH + '/manager/create', function (req, res) {
-        "use strict";
-        ManagerController.create(req.body, function (data) {
-            res.json(data);
-        });
-    });
+    app.post(BASE_PATH + '/manager/create', ManagerController.create);
 
     //delete a motel account
-    app.delete(BASE_PATH + '/manager/remove', function (req, res) {
-        "use strict";
-        ManagerController.remove(req.body, function (data) {
-           res.json(data);
-        });
-    });
+    app.delete(BASE_PATH + '/manager/remove', ManagerController.remove);
 
     //update a manager account
-    app.put(BASE_PATH + '/manager/update/account', function (req, res) {
-        "use strict";
-        ManagerController.update(req.body, function (data) {
-           res.json(data);
-        });
-    });
+    app.put(BASE_PATH + '/manager/update/account', ManagerController.update);
 
     //update manager email address
-    app.put(BASE_PATH + '/manager/update/email', function (req, res) {
-        "use strict";
-        ManagerController.updateEmail(req.body, function (data) {
-            res.json(data);
-        });
-    });
+    app.put(BASE_PATH + '/manager/update/email', ManagerController.updateEmail);
 
     //update manager password
-    app.put(BASE_PATH + '/manager/update/password', function (req, res) {
-        "use strict";
-        ManagerController.updatePassword(req.body, function (data) {
-            res.json(data);
-        });
-    });
+    app.put(BASE_PATH + '/manager/update/password', ManagerController.updatePassword);
 
     //get all manager's motel
-    app.get(BASE_PATH + '/manager/motels', function (req, res) {
-        "use strict";
-        ManagerController.manageMotels(req.query, function (data) {
-            "use strict";
-            res.json(data);
-        });
-    });
+    app.get(BASE_PATH + '/manager/motels', ManagerController.manageMotels);
+
 
     
     // =========================================================================
@@ -195,20 +119,10 @@ module.exports = function (app) {
     // =========================================================================
 
     //create a new room
-    app.post(BASE_PATH + '/room/create', function (req, res) {
-        "use strict";
-        RoomController.create(req.body, function (data) {
-            res.json(data);
-        });
-    });
+    app.post(BASE_PATH + '/room/create', RoomController.create);
 
     //create a new room
-    app.post(BASE_PATH + '/room/setAvailable', function (req, res) {
-        "use strict";
-        RoomController.setAvailable(req.body, function (data) {
-            res.json(data);
-        });
-    });
+    app.post(BASE_PATH + '/room/setAvailable', RoomController.setAvailable);
 
 
 
@@ -217,24 +131,14 @@ module.exports = function (app) {
     // =========================================================================
 
     //create a new room
-    app.post(BASE_PATH + '/reservation/create', function (req, res) {
-        "use strict";
-        ReservationController.create(req.body, function (data) {
-            res.json(data);
-        });
-    });
+    app.post(BASE_PATH + '/reservation/create', ReservationController.create);
 
     // =========================================================================
     // FEED ROUTES =============================================================
     // =========================================================================
 
     //create a new room
-    app.get(BASE_PATH + '/feed/list', function (req, res) {
-        "use strict";
-        FeedItemController.feedList(function (data) {
-            res.json(data);
-        });
-    });
+    app.get(BASE_PATH + '/feed/list', FeedItemController.feedList);
 
 
     module.exports = app;

@@ -16,7 +16,6 @@ var SALT_WORK_FACTOR = 10;
 var MotelSchema = require('../Motel/schema');
 
 //###################
-//TODO: finalizar schema do motel
 var managerSchema = new Schema({
         name: {
             first: {type: String, required: true},

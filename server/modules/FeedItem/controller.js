@@ -15,13 +15,25 @@ var feedList = function (res) {
     //Retorna a lista de quartos disponíveis
     FeedItem.find({status: true}).populate('room motel').exec(function (err, list) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
         }
 
-        res(list);
+        res.json(list);
     });
 };
+
+/**
+ * Error handler
+ * @param err
+ * @returns {{type: boolean, data: *}}
+ */
+function handleError(err) {
+    return {
+        type: false,
+        data: err
+    };
+}
 
 module.exports = {
     feedList: feedList
