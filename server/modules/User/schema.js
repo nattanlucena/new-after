@@ -17,9 +17,21 @@ var LOCK_TIME = 2 * 60 * 60 * 1000;
 
 //###################
 var userSchema = new Schema({
-        name: String,
-        email: {type: String, required: true, index: { unique: true } },
-        password: {type: String, required: true},
+        name: {
+            first: {type: String, required: true},
+            last: {type: String, required: false}
+        },
+        email: {
+            type: String,
+            required: true,
+            index: { unique: true },
+            trim: true
+        },
+        password: {
+            type: String,
+            required: true,
+            select: true
+        },
         reservations: [{
                 type: Schema.Types.ObjectId,
                 ref: 'Reservation'
@@ -40,6 +52,7 @@ userSchema.pre('save', function (next) {
         return next();
     }
 
+
     bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
         "use strict";
         bcrypt.hash(_this.password, salt, function (err, hash) {
@@ -52,17 +65,36 @@ userSchema.pre('save', function (next) {
     });
 });
 
-//Define a static comparePassword method for User Schema
-userSchema.methods.comparePassword = function (plainText, userPassword, callback) {
-  bcrypt.compare(plainText, userPassword, function (err, data) {
-      if (err) {
-          callback(err);
-      } else {
-          callback(null, data);
-      }
-  });
-};
+//Valida se o email já está cadastrado no banco para criar um novo usuário ou para a função
+//de alteração de email
+userSchema.path('email').validate(function (value, done) {
+    var self = this;
 
+    if(!self.isModified('email')) {
+        return done();
+    }
+
+    this.model('User').count({ email: value }, function(err, count) {
+        if (err) {
+            return done(err);
+        }
+        // If `count` is greater than zero, "invalidate"
+        done(!count);
+    });
+},'Please provide a valid email address');
+
+
+//Define a static comparePassword method for User Schema
+userSchema.methods.comparePassword = function (plainText, callback) {
+    var self = this;
+    bcrypt.compare(plainText, self.password, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, data);
+        }
+    });
+};
 
 /*
 //http://devsmash.com/blog/implementing-max-login-attempts-with-mongoose

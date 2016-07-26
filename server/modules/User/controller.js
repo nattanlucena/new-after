@@ -19,33 +19,30 @@ var B = require('bluebird');
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var create = function (req, res) {
-    User.findOne({email: req.email}, function (err, data) {
+    var req = req.body;
+    //Cria um novo usuário
+    var user = new User({
+        name: {
+            first: req.name.first,
+            last: req.name.last
+        },
+        email: req.email,
+        password: req.password
+    });
+
+    User(req).save(function (err, data) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
-
-        if (data !== null) {
-            var message = {
-                type: false,
-                message: 'User account already created'
-            };
-            res.json(message);
-        } else {
-            User(req).save(function (err, data) {
-                if (err) {
-                    res.status(500);
-                    res.json(handleError(err));
-                }
-                //User successfully created
-                var message = {
-                    type:false,
-                    message: 'The user account was created successfully',
-                    data: data
-                };
-                res.json(message);
-            });
-        }
+        //User successfully created
+        var message = {
+            type: true,
+            message: 'The user account was created successfully',
+            data: data
+        };
+        res.json(message);
     });
 };
 
@@ -66,6 +63,7 @@ var findByEmail = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (data !== null) {
@@ -107,6 +105,7 @@ var login = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         var message;
@@ -117,8 +116,7 @@ var login = function (req, res) {
             };
             res.json(message);
         } else {
-            var user = new User({email: req.email, password: req.password});
-            user.comparePassword(req.password, data.password, function (err, data) {
+            data.comparePassword(req.password, function (err, data) {
                if (data) {
                    message = {
                        type: true,
@@ -139,65 +137,48 @@ var login = function (req, res) {
 };
 
 
-
 /**
  * ##########################
  * Example:
  *      req: {
- *          email: 'oldEmail',
- *          newEmail: 'newEmail'
+ *          userEmail: 'email'
+ *          new: 'newEmail'
  *      }
  * ##########################
- * @param {String} req.email
+ * @param {String} req.userEmail
  * @param {String} req.newEmail
  * @param {Function} res - Callback response
  *
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var updateEmail = function (req, res) {
-    var oldEmail = req.params;
-    var newEmail = req.query;
+    var userEmail = req.body.userEmail;
+    var newEmail = req.body.newEmail;
+
     //Procura o registro baseado no email e retorna a senha para a verificação
-    User.findOne({email: oldEmail.email}, function (err, user) {
+    User.findOne({email: userEmail}, function (err, user) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (user) {
-            //Verifica se o novo email já está cadastrado na base de dados
-            User.findOne({email: newEmail.email}, function (err, emailExists) {
+            //Atualiza o usuário com o novo email
+            user.email = newEmail;
+            user.save(function (err) {
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
-                //Se o email já estiver cadastrado, retorna mensagem à view
-                if (emailExists) {
-                    var message = {
-                        type: false,
-                        message: 'Email address already in use'
-                    };
-                    res.json(message);
-                }
+                var message = {
+                    type: true,
+                    message: 'Email address updated'
+                };
+                res.json(message);
 
-                //Atualiza o usuário com o novo email
-                user.email = newEmail.email;
-                user.save(function (err) {
-
-                    if (err) {
-                        var err = new Error(err);
-                        throw err;
-                    }
-
-                    var message = {
-                        type: true,
-                        message: 'Email address updated'
-                    };
-                    res.json(message);
-
-                });
             });
-
         } else {
             var message = {
                 type: false,
@@ -219,7 +200,7 @@ var updateEmail = function (req, res) {
  *      }
  *  ##########################
  *
- *  @param {String} req.email
+ * @param {String} req.email
  * @param {String} req.oldPassword
  * @param {String} req.newPassword
  * @param {Function} res - Callback response
@@ -227,25 +208,27 @@ var updateEmail = function (req, res) {
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var updatePassword = function (req, res) {
-    var email = req.params.email;
+    var email = req.body.email;
     var password = {
         old: req.body.oldPassword,
         new: req.body.newPassword
     };
 
     //Procura o registro baseado no email e retorna a senha para a verificação
-    User.findOne({email: email}, 'password',function (err, user) {
+    User.findOne({email: email},function (err, user) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (user) {
             //compara a senha antiga enviada pelo usuário, é a mesma cadastrada no banco
-            user.comparePassword(password.old, user.password, function (err, isMatch) {
+            user.comparePassword(password.old, function (err, isMatch) {
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
 
                 //Caso a comparação seja verdadeira, atualiza a senha e salva a alteração no banco
@@ -255,6 +238,7 @@ var updatePassword = function (req, res) {
                         if (err) {
                             res.status(500);
                             res.json(handleError(err));
+                            return;
                         }
                         var message = {
                             type: true,
@@ -294,19 +278,20 @@ var updatePassword = function (req, res) {
  * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem
  */
 var remove = function (req, res) {
-    var req = req.body;
+    var userEmail = req.body.email;
 
-    User.findOneAndRemove({email: req.email}, function (err, data) {
+    User.findOneAndRemove({email: req.userEmail}, function (err, user) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
         var message;
-        if (data) {
+        if (user) {
             message = {
                 type: true,
                 message: 'The user account was removed successfully',
-                data: data
+                data: user
             };
 
         } else {
@@ -338,6 +323,7 @@ var getReservations = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (data) {
@@ -372,8 +358,9 @@ var getClosedReservations = function (req, res) {
 
     User.findOne({email: req.email}).populate('reservations').exec(function (err, user) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
+            return;
         }
 
         if (user) {
@@ -390,7 +377,7 @@ var getClosedReservations = function (req, res) {
             message = {
                 message: 'User not found'
             };
-            res(message);
+            res.json(message);
         }
     });
 };
@@ -411,6 +398,7 @@ var getCancelledReservations = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (user) {

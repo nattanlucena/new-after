@@ -29,6 +29,7 @@ module.exports = function (app) {
 
     app.use(errorHandler);
 
+
     // =========================================================================
     // DEFAULT =================================================================
     // =========================================================================
@@ -57,6 +58,7 @@ module.exports = function (app) {
     // USER ROUTES =============================================================
     // =========================================================================
 
+
     //get an user by email
     app.get(BASE_PATH + '/users/:email', UserController.findByEmail);
     //get all reservations
@@ -70,9 +72,9 @@ module.exports = function (app) {
     //user login
     app.post(BASE_PATH + '/users/login', UserController.login);
     //update email
-    app.put(BASE_PATH + '/users/:email/update/email', UserController.updateEmail);
+    app.put(BASE_PATH + '/users/update/email', UserController.updateEmail);
     //update password
-    app.put(BASE_PATH + '/users/:email/update/password', UserController.updatePassword);
+    app.put(BASE_PATH + '/users/update/password', UserController.updatePassword);
     //delete an user
     app.delete(BASE_PATH + '/users/remove',  UserController.remove);
 
@@ -89,29 +91,24 @@ module.exports = function (app) {
     app.get(BASE_PATH + '/motel/rooms', MotelController.getRooms);
 
 
-
     // =========================================================================
     // MANAGER ROUTES ==========================================================
     // =========================================================================
 
     //create a new manager account
-    app.post(BASE_PATH + '/manager/create', ManagerController.create);
-
+    app.post(BASE_PATH + '/managers/create', ManagerController.create);
     //delete a motel account
-    app.delete(BASE_PATH + '/manager/remove', ManagerController.remove);
-
+    app.delete(BASE_PATH + '/managers/remove', ManagerController.remove);
     //update a manager account
-    app.put(BASE_PATH + '/manager/update/account', ManagerController.update);
-
+    app.put(BASE_PATH + '/managers/update/account', ManagerController.update);
+    //update a manager account
+    app.post(BASE_PATH + '/managers/login', ManagerController.login);
     //update manager email address
-    app.put(BASE_PATH + '/manager/update/email', ManagerController.updateEmail);
-
+    app.put(BASE_PATH + '/managers/update/email', ManagerController.updateEmail);
     //update manager password
-    app.put(BASE_PATH + '/manager/update/password', ManagerController.updatePassword);
-
+    app.put(BASE_PATH + '/managers/update/password', ManagerController.updatePassword);
     //get all manager's motel
-    app.get(BASE_PATH + '/manager/motels', ManagerController.manageMotels);
-
+    app.get(BASE_PATH + '/managers/motels', ManagerController.manageMotels);
 
     
     // =========================================================================
@@ -120,10 +117,8 @@ module.exports = function (app) {
 
     //create a new room
     app.post(BASE_PATH + '/room/create', RoomController.create);
-
     //create a new room
     app.post(BASE_PATH + '/room/setAvailable', RoomController.setAvailable);
-
 
 
     // =========================================================================
@@ -133,6 +128,7 @@ module.exports = function (app) {
     //create a new room
     app.post(BASE_PATH + '/reservation/create', ReservationController.create);
 
+    
     // =========================================================================
     // FEED ROUTES =============================================================
     // =========================================================================

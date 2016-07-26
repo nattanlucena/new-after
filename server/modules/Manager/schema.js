@@ -12,8 +12,8 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
 
+var VE = require('../Utils/ValidateEmail');
 
-var MotelSchema = require('../Motel/schema');
 
 //###################
 var managerSchema = new Schema({
@@ -23,8 +23,13 @@ var managerSchema = new Schema({
         },
         sex: {type: String, required: true},
         phone: String,
-        email: {type: String, required: true, index: { unique: true } },
-        password: {type: String, required: true, select: false },
+        email: {
+            type: String,
+            required: true,
+            index: { unique: true },
+            trim: true
+        },
+        password: {type: String, required: true, select: true },
         motels: [{ type: Schema.Types.ObjectId, ref: 'Motel'}]
     },
     {collection: 'manager'});
@@ -50,9 +55,28 @@ managerSchema.pre('save', function (next) {
     });
 });
 
+//Valida se o email já está cadastrado no banco para criar um novo usuário ou para a função
+//de alteração de email
+managerSchema.path('email').validate(function (value, done) {
+    var self = this;
+
+    if(!self.isModified('email')) {
+        return done();
+    }
+
+    this.model('Manager').count({ email: value }, function(err, count) {
+        if (err) {
+            return done(err);
+        }
+        // If `count` is greater than zero, "invalidate"
+        done(!count);
+    });
+},'Please provide a valid email address');
+
 //Define a static comparePassword method for Manager Schema
-managerSchema.methods.comparePassword = function (plainText, userPassword, callback) {
-    bcrypt.compare(plainText, userPassword, function (err, data) {
+managerSchema.methods.comparePassword = function (plainText, callback) {
+    var self = this;
+    bcrypt.compare(plainText, self.password, function (err, data) {
         if (err) {
             callback(err);
         } else {

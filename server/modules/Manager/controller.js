@@ -25,6 +25,7 @@ var create = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (data !== null) {
@@ -42,6 +43,7 @@ var create = function (req, res) {
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
                 //Manaeger successfully created
                 var message = {
@@ -67,8 +69,9 @@ var remove = function (req, res) {
     "use strict";
     Manager.findOneAndRemove({email: req.email}, function (err, data) {
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500);
+            res.json(handleError(err));
+            return;
         }
 
         //Gerente não localizado
@@ -97,6 +100,7 @@ var remove = function (req, res) {
                     if (err) {
                         res.status(500);
                         res.json(handleError(err));
+                        return;
                     }
                     //Atualiza cada motel removendo a referência do gerente removido
                     data.forEach(function (motel) {
@@ -105,6 +109,7 @@ var remove = function (req, res) {
                             if (err) {
                                 res.status(500);
                                 res.json(handleError(err));
+                                return;
                             }
                         });
                     });
@@ -152,6 +157,7 @@ var update = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (data) {
@@ -191,6 +197,7 @@ var updateEmail = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (manager) {
@@ -200,6 +207,7 @@ var updateEmail = function (req, res) {
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
 
                 if (emailExists) {
@@ -216,6 +224,7 @@ var updateEmail = function (req, res) {
                     if (err) {
                         res.status(500);
                         res.json(handleError(err));
+                        return;
                     }
 
                     var message = {
@@ -258,14 +267,16 @@ var updatePassword = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (manager) {
             //compara a senha antiga enviada pelo gerente, é a mesma cadastrada no banco
-            manager.comparePassword(req.oldPassword, manager.password, function (err, isMatch) {
+            manager.comparePassword(req.oldPassword, function (err, isMatch) {
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
 
                 //Caso a comparação seja verdadeira, atualiza a senha e salva a alteração no banco
@@ -275,6 +286,7 @@ var updatePassword = function (req, res) {
                         if (err) {
                             res.status(500);
                             res.json(handleError(err));
+                            return;
                         }
                         var message = {
                             type: true,
@@ -302,28 +314,68 @@ var updatePassword = function (req, res) {
     });
 };
 
+/**
+ *  Strategy for login
+ *
+ * @param {Object} req
+ * @param {String} req.email
+ * @param {String} req.password
+ * @param {Function} res - Callback : res(err, isMatch, message)
+ *
+ * @returns {Object} - Retorna no callback um objeto com a respectiva mensagem ou com o registro do login
+ */
+
+var login = function (req, res) {
+    var req = req.body;
+    Manager.findOne({email: req.email}, function (err, data) {
+        if (err) {
+            res.status(500);
+            res.json(handleError(err));
+            return;
+        }
+
+        var message;
+        if (!data) {
+            message = {
+                type: false,
+                message: 'User not found'
+            };
+            res.json(message);
+        } else {
+            data.comparePassword(req.password, function (err, data) {
+                if (data) {
+                    message = {
+                        type: true,
+                        message: 'Success',
+                        data: data
+                    };
+                    res.json(message);
+                } else {
+                    message = {
+                        type: false,
+                        message: 'Incorrect password'
+                    };
+                    res.json(message);
+                }
+            });
+        }
+    });
+};
 
 /**
  * Retorna uma lista de todos os Motéis atrelados a conta do gerente
+ *
  * @param req
  * @param res
  */
 var manageMotels = function (req, res) {
     var req = req.query;
 
-    /*
-    Manager.findOne({email: req.email}, function (err, manager) {
-        console.log(manager);
-        Manager.find({_id: {$in: manager.motels}}, function (err, data) {
-           console.log(data);
-        });
-    });
-     */
-
     Manager.findOne({email: req.email}).populate('motels').exec(function (err, data) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
         if (data) {
             res.json(data.motels);
@@ -353,5 +405,6 @@ module.exports = {
     updateEmail: updateEmail,
     updatePassword: updatePassword,
     remove: remove,
+    login: login,
     manageMotels: manageMotels
 };
