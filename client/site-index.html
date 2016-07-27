@@ -13,14 +13,16 @@
 	<title>After Web</title>
 	<link rel="icon" href="../../favicon.ico">
 
-	<link rel="stylesheet" href="public/css/site.css" />
+	<link rel="stylesheet" href="../libs/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+
+	<link rel="stylesheet" href="public/stylesheets/site.css" />
 
 	</head>
 	<body ng-app="after">
 		<header app-header></header>
 		<h2>After Web</h2>
 
-		<div ui-view></div>
+		<div ui-view class="container" ></div>
 
 		<footer app-footer>
 			<p>Copyright 2009 Your name</p>
@@ -32,6 +34,14 @@
 
 		<script src="app/app.js"></script>
 		<script src="app/app.routes.js"></script>
-		<script src="app/shared/sharedDirective.js"></script>
+
+		<!--Loading controllers-->
+		<script src="app/site/manager/manager.controller.js"></script>
+
+		<!--Loading directives-->
+		<script src="app/shared/shared.directive.js"></script>
+
+		<!--Loading services-->
+		<script src="app/site/manager/manager.service.js"></script>
 	</body>
 </html>

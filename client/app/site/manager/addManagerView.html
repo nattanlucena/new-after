@@ -1,3 +1,37 @@
-<div>
-    Add Manager Controller
+<div id="add-manager" class="row">
+    <div class="jumbotron">
+        <h1>Ola, Manager!</h1>
+        <p>Cadastre-se e tenha total acesso ao nosso sistema.</p>
+    </div>
+    <div class="col-md-12">
+        <div class="form">
+            <form >
+                <div class="form-group">
+                    <label for="name" class="control-label col-md-2">Primeiro Nome</label>
+                    <div class="col-md-4">
+                        <input id="name" class="form-control" type="text" name="name" placeholder="Nome completo" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <pre>
+    name: {
+    first: {type: String, required: true},
+    last: {type: String, required: false}
+    },
+    sex: {type: String, required: true},
+    phone: String,
+    email: {
+    type: String,
+    required: true,
+    index: { unique: true },
+    trim: true
+    },
+    password: {type: String, required: true, select: true },
+    motels: [{ type: Schema.Types.ObjectId, ref: 'Motel'}]
+
+</pre>
+
 </div>
