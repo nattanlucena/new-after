@@ -20,6 +20,7 @@ var create = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         //Caso encontre, realiza a verificação se o Motel já está cadastrado
@@ -27,10 +28,10 @@ var create = function (req, res) {
 
             //Procura o Motel pelo nome e pelo cep (só deverá ter um motel para cada cep)
             Motel.findOne({name: req.motel.name, 'address.cep': req.motel.address.cep}, function (err, data) {
-
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
 
                 //Caso não encontre Motel cadastrado com os mesmos dados da busca, prossegue com a criação
@@ -49,6 +50,7 @@ var create = function (req, res) {
                         if (err) {
                             res.status(500);
                             res.json(handleError(err));
+                            return;
                         }
                         //Atualiza o registro do manager com a referência do hotel e a data de criação
                         manager.motels.push(data._id);
@@ -56,6 +58,7 @@ var create = function (req, res) {
                             if (err) {
                                 res.status(500);
                                 res.json(handleError(err));
+                                return;
                             }
                             //return the manager updated document
                             var message = {
@@ -109,6 +112,7 @@ var remove = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (manager) {
@@ -116,6 +120,7 @@ var remove = function (req, res) {
                 if (err) {
                     res.status(500);
                     res.json(handleError(err));
+                    return;
                 }
                 if (data) {
                     manager.motels.forEach(function (motelId) {
@@ -128,6 +133,7 @@ var remove = function (req, res) {
                                    if (err) {
                                        res.status(500);
                                        res.json(handleError(err));
+                                       return;
                                    }
 
                                    var message = {
@@ -171,6 +177,7 @@ var getRooms = function (req, res) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
         if (data) {

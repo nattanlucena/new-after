@@ -4,6 +4,7 @@
 
 var Manager = require('./model');
 var Motel = require('../Motel/model');
+var ErrorHandler = require('../Utils/ErrorHandler');
 
 /**
  * Verify if a manager already exists. Case false, create a new manager. Case true, return
@@ -21,28 +22,14 @@ var create = function (req, res) {
     var req = req.body;
 
     "use strict";
-    Manager.findOne({email: req.email}, function (err, data) {
-        if (err) {
-            res.status(500);
-            res.json(handleError(err));
-            return;
-        }
 
-        if (data !== null) {
-            var message = {
-                type: false,
-                message: 'Manager account already created!'
-            };
-            res.json(message);
-        } else {
             req.name = {
                 first: req.name.first,
                 last: req.name.last
             };
             Manager(req).save(function (err, data) {
                 if (err) {
-                    res.status(500);
-                    res.json(handleError(err));
+                    res.status(500).json(ErrorHandler.getErrorMessage(err));
                     return;
                 }
                 //Manaeger successfully created
@@ -53,8 +40,7 @@ var create = function (req, res) {
                 };
                 res.json(message);
             });
-        }
-    });
+
 };
 
 
@@ -69,8 +55,7 @@ var remove = function (req, res) {
     "use strict";
     Manager.findOneAndRemove({email: req.email}, function (err, data) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -98,8 +83,7 @@ var remove = function (req, res) {
                 //Procura os motéis a partir de seu ID
                 Motel.find({$and: motelsIdsArr}, function (err, data) {
                     if (err) {
-                        res.status(500);
-                        res.json(handleError(err));
+                        res.status(500).json(ErrorHandler.getErrorMessage(err));
                         return;
                     }
                     //Atualiza cada motel removendo a referência do gerente removido
@@ -107,8 +91,7 @@ var remove = function (req, res) {
                         motel.createdBy = undefined;
                         motel.save(function (err) {
                             if (err) {
-                                res.status(500);
-                                res.json(handleError(err));
+                                res.status(500).json(ErrorHandler.getErrorMessage(err));
                                 return;
                             }
                         });
@@ -387,17 +370,6 @@ var manageMotels = function (req, res) {
 
 };
 
-/**
- * Error handler
- * @param err
- * @returns {{type: boolean, data: *}}
- */
-function handleError(err) {
-    return {
-        type: false,
-        data: err
-    };
-}
 
 module.exports = {
     create: create,

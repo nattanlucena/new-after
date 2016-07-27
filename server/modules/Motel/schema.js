@@ -40,6 +40,6 @@ var autoPopulateManager = function (next) {
 };
 
 motelSchema.pre('findOne', autoPopulateManager);
-motelSchema.pre('find', autoPopulateManager);
+//motelSchema.pre('find', autoPopulateManager);
 
 module.exports = motelSchema;

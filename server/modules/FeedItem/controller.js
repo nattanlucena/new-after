@@ -9,17 +9,17 @@ var FeedItem = require('./model');
  *
  * @param res
  */
-var feedList = function (res) {
-
+var feedList = function (req, res) {
     
-    //Retorna a lista de quartos disponíveis
-    FeedItem.find({status: true}).populate('room motel').exec(function (err, list) {
+    //Retorna a lista de motéis com quartos disponíveis
+    FeedItem.find({status: true}).populate('motel').exec(function (err, items) {
         if (err) {
             res.status(500);
             res.json(handleError(err));
+            return;
         }
 
-        res.json(list);
+        res.json(items);
     });
 };
 
