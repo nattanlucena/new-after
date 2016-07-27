@@ -3,7 +3,7 @@
  */
 
 var FeedItem = require('./model');
-
+var ErrorHandler = require('../Utils/ErrorHandler');
 
 /**
  *
@@ -14,8 +14,7 @@ var feedList = function (req, res) {
     //Retorna a lista de motéis com quartos disponíveis
     FeedItem.find({status: true}).populate('motel').exec(function (err, items) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -23,17 +22,6 @@ var feedList = function (req, res) {
     });
 };
 
-/**
- * Error handler
- * @param err
- * @returns {{type: boolean, data: *}}
- */
-function handleError(err) {
-    return {
-        type: false,
-        data: err
-    };
-}
 
 module.exports = {
     feedList: feedList

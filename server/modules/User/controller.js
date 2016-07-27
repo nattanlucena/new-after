@@ -4,6 +4,7 @@
 'user strict';
 var User = require('./model');
 var B = require('bluebird');
+var ErrorHandler = require('../Utils/ErrorHandler');
 
 
 /**
@@ -32,8 +33,7 @@ var create = function (req, res) {
 
     User(req).save(function (err, data) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
         //User successfully created
@@ -61,8 +61,7 @@ var findByEmail = function (req, res) {
 
     User.findOne({email: req.email}, function (err, data) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -103,8 +102,7 @@ var login = function (req, res) {
     var req = req.body;
     User.findOne({email: req.email}, function (err, data) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -158,8 +156,7 @@ var updateEmail = function (req, res) {
     //Procura o registro baseado no email e retorna a senha para a verificação
     User.findOne({email: userEmail}, function (err, user) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -168,8 +165,7 @@ var updateEmail = function (req, res) {
             user.email = newEmail;
             user.save(function (err) {
                 if (err) {
-                    res.status(500);
-                    res.json(handleError(err));
+                    res.status(500).json(ErrorHandler.getErrorMessage(err));
                     return;
                 }
                 var message = {
@@ -217,8 +213,7 @@ var updatePassword = function (req, res) {
     //Procura o registro baseado no email e retorna a senha para a verificação
     User.findOne({email: email},function (err, user) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -226,8 +221,7 @@ var updatePassword = function (req, res) {
             //compara a senha antiga enviada pelo usuário, é a mesma cadastrada no banco
             user.comparePassword(password.old, function (err, isMatch) {
                 if (err) {
-                    res.status(500);
-                    res.json(handleError(err));
+                    res.status(500).json(ErrorHandler.getErrorMessage(err));
                     return;
                 }
 
@@ -236,8 +230,7 @@ var updatePassword = function (req, res) {
                     user.password = password.new;
                     user.save(function (err) {
                         if (err) {
-                            res.status(500);
-                            res.json(handleError(err));
+                            res.status(500).json(ErrorHandler.getErrorMessage(err));
                             return;
                         }
                         var message = {
@@ -282,8 +275,7 @@ var remove = function (req, res) {
 
     User.findOneAndRemove({email: req.userEmail}, function (err, user) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
         var message;
@@ -321,8 +313,7 @@ var getReservations = function (req, res) {
 
     User.findOne({email: req.email}).populate('reservations').exec(function (err, data) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -358,8 +349,7 @@ var getClosedReservations = function (req, res) {
 
     User.findOne({email: req.email}).populate('reservations').exec(function (err, user) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -396,8 +386,7 @@ var getCancelledReservations = function (req, res) {
 
     User.findOne({email: req.email}).populate('reservations').exec(function (err, user) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -425,18 +414,6 @@ var getCancelledReservations = function (req, res) {
     });
 };
 
-
-/**
- * Error handler
- * @param err
- * @returns {{type: boolean, data: *}}
- */
-function handleError(err) {
-    return {
-        type: false,
-        data: err
-    };
-}
 
 module.exports = {
     create : create,

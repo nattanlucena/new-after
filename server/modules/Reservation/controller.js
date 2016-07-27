@@ -1,14 +1,16 @@
 var Reservation = require('./model');
 var User = require('../User/model');
 var Motel = require('../Motel/model');
+var ErrorHandler = require('../Utils/ErrorHandler');
+
 
 var create = function (req, res) {
 
     User.findOne({email: req.user.email}, function (err, user) {
 
         if (err) {
-            var err = new Error(err);
-            throw err;
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
+            return;
         }
 
         //Usuário localizado
@@ -18,8 +20,8 @@ var create = function (req, res) {
             Motel.findOne({uniqueID: req.motel.uniqueID}).populate('rooms.room').exec(function (err, motel) {
 
                 if (err) {
-                    var err = new Error(err);
-                    throw err;
+                    res.status(500).json(ErrorHandler.getErrorMessage(err));
+                    return;
                 }
 
                 //Motel localizado
@@ -44,8 +46,8 @@ var create = function (req, res) {
                         //Salva a reserva
                         Reservation(reservation).save(function (err, data) {
                             if (err) {
-                                var err = new Error(err);
-                                throw err;
+                                res.status(500).json(ErrorHandler.getErrorMessage(err));
+                                return;
                             }
                             var userReservation = {
                                 reservation: data._id,
@@ -54,35 +56,43 @@ var create = function (req, res) {
                             user.reservations.push(userReservation);
                             user.save(function (err) {
                                 if (err) {
-                                    var err = new Error(err);
-                                    throw err;
+                                    res.status(500).json(ErrorHandler.getErrorMessage(err));
+                                    return;
                                 }
                             });
-                            res(data);
+                            var message = {
+                                type: true,
+                                message: 'Success!',
+                                data: data
+                            };
+                            res.json(message);
                         });
 
 
                     } else {
                         //User successfully created
                         var message = {
+                            type: false,
                             message: 'Room not found!'
                         };
-                        res(message);
+                        res.json(message);
                     }
                 } else {
                     //User successfully created
                     var message = {
+                        type: false,
                         message: 'Motel not found!'
                     };
-                    res(message);
+                    res.json(message);
                 }
 
             });
         } else {
             var message = {
+                type: false,
                 message: 'User not found!'
             };
-            res(message);
+            res.json(message);
         }
 
     });

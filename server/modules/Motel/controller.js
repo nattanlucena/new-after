@@ -5,6 +5,7 @@
 var Motel = require('./model');
 var Manager = require('../Manager/model');
 var GenerateID = require('../Utils/GenerateID');
+var ErrorHandler = require('../Utils/ErrorHandler');
 
 /*
     req: {
@@ -18,8 +19,7 @@ var create = function (req, res) {
     //Localiza o gerente que está logado, pelo email
     Manager.findOne({email: req.manager.email}, function (err, manager) {
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -29,8 +29,7 @@ var create = function (req, res) {
             //Procura o Motel pelo nome e pelo cep (só deverá ter um motel para cada cep)
             Motel.findOne({name: req.motel.name, 'address.cep': req.motel.address.cep}, function (err, data) {
                 if (err) {
-                    res.status(500);
-                    res.json(handleError(err));
+                    res.status(500).json(ErrorHandler.getErrorMessage(err));
                     return;
                 }
 
@@ -48,16 +47,14 @@ var create = function (req, res) {
 
                     Motel(motel).save(function (err, data) {
                         if (err) {
-                            res.status(500);
-                            res.json(handleError(err));
+                            res.status(500).json(ErrorHandler.getErrorMessage(err));
                             return;
                         }
                         //Atualiza o registro do manager com a referência do hotel e a data de criação
                         manager.motels.push(data._id);
                         manager.save(function (err, updated) {
                             if (err) {
-                                res.status(500);
-                                res.json(handleError(err));
+                                res.status(500).json(ErrorHandler.getErrorMessage(err));
                                 return;
                             }
                             //return the manager updated document
@@ -110,16 +107,14 @@ var remove = function (req, res) {
     Manager.findOne({email: req.manager.email}, function (err, manager) {
         "use strict";
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
         if (manager) {
             Motel.findOneAndRemove({uniqueID: req.motel.uniqueID}, function (err, removedMotel) {
                 if (err) {
-                    res.status(500);
-                    res.json(handleError(err));
+                    res.status(500).json(ErrorHandler.getErrorMessage(err));
                     return;
                 }
                 if (data) {
@@ -131,8 +126,7 @@ var remove = function (req, res) {
                                manager.motels.splice(idx, 1);
                                manager.save(function (err, updated) {
                                    if (err) {
-                                       res.status(500);
-                                       res.json(handleError(err));
+                                       res.status(500).json(ErrorHandler.getErrorMessage(err));
                                        return;
                                    }
 
@@ -175,8 +169,7 @@ var getRooms = function (req, res) {
     Motel.findOne({uniqueID: req.uniqueID}, function (err, data) {
         "use strict";
         if (err) {
-            res.status(500);
-            res.json(handleError(err));
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
 
@@ -188,18 +181,6 @@ var getRooms = function (req, res) {
     });
 };
 
-
-/**
- * Error handler
- * @param err
- * @returns {{type: boolean, data: *}}
- */
-function handleError(err) {
-    return {
-        type: false,
-        data: err
-    };
-}
 
 module.exports = {
     create: create,
