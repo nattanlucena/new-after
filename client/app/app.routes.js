@@ -16,7 +16,8 @@
             })
             .state('site.manager', {
                 url:'/site/manager',
-                templateUrl: 'app/site/manager/addManagerView.html'
+                templateUrl: 'app/site/manager/addManagerView.html',
+                controller: 'ManagerCtrl'
             });
     });
 }());
