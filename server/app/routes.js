@@ -47,11 +47,11 @@ module.exports = function (app) {
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end('Server On');
     });
-   /*
-    app.get('/*', function (req, res) {
+
+    app.get('/client/*', function (req, res) {
         res.redirect('/');
     });
-    */
+
 
 
     // =========================================================================

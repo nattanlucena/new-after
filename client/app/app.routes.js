@@ -2,7 +2,7 @@
     var app = angular.module('after');
 
     app.config(function($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise('siteIndex');
+        $urlRouterProvider.otherwise('site');
 
         $stateProvider
             .state('site', {
@@ -12,17 +12,11 @@
             })
             .state('site.index', {
                 url: '/site',
-                template: '<p> mosovu </p>'
+                templateUrl: 'app/site/home/home.html'
             })
-
-        /*$stateProvider
-            .state('site', {
-                url: '/site',
-                templateUrl: 'app/site/index.html'
-            })
-            .state('manager', {
-                url: '/site/manager',
+            .state('site.manager', {
+                url:'/site/manager',
                 templateUrl: 'app/site/manager/addManagerView.html'
-            })*/
+            });
     });
 }());
