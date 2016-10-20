@@ -46,6 +46,24 @@ var create = function (req, res) {
     });
 };
 
+/**
+ * Returna todos os usuários cadastrados
+ *
+ * @param {Function} res - Callback response
+ *
+ * @returns {Array} - Array of user objects
+ */
+var getAll = function (req, res) {
+    User.find({}, {_id: 0}, function (err, data) {
+        if (err) {
+            res.status(500).json(ErrorHandler.getErrorMessage(err));
+            return;
+        }
+        console.log(data);
+        res.json(data);
+    });
+};
+
 
 /**
  *  Get an user by email
@@ -417,6 +435,7 @@ var getCancelledReservations = function (req, res) {
 
 module.exports = {
     create : create,
+    getAll: getAll,
     login: login,
     findByEmail: findByEmail,
     remove: remove,
