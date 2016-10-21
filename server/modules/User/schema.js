@@ -12,11 +12,13 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
 
+var authTypes = ['github', 'twitter', 'facebook', 'google'];
+
 //###################
 var userSchema = new Schema({
         name: {
-            first: {type: String, required: true},
-            last: {type: String, required: false}
+            type: String,
+            required: true
         },
         email: {
             type: String,
@@ -27,15 +29,35 @@ var userSchema = new Schema({
         password: {
             type: String,
             required: true,
-            select: false
+            select: true
         },
         reservations: [{
                 type: Schema.Types.ObjectId,
                 ref: 'Reservation'
-        }]
+        }],
+        token: {
+            type: String
+        },
+        salt: {
+            type: String
+        },
+        provider: {
+            type: String,
+            required: 'Provider is required'
+        },
+        updated: {
+            type: Date
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
     },
     {collection: 'user'});
 
+/**
+ * Validations
+ */
 
 //Define a trigger for user password pre save
 userSchema.pre('save', function (next) {
@@ -76,6 +98,12 @@ userSchema.path('email').validate(function (value, done) {
     });
 },'The specified email address is already in use.');
 
+//Validate empty email
+userSchema.path('email').validate(function(email) {
+        // if you are authenticating by any of the oauth strategies, don't validate
+        if (authTypes.indexOf(this.provider) !== -1) return true;
+        return email.length;
+    }, 'Email cannot be blank');
 
 //Define a static comparePassword method for User Schema
 userSchema.methods.comparePassword = function (plainText, callback) {
@@ -87,6 +115,12 @@ userSchema.methods.comparePassword = function (plainText, callback) {
             callback(null, data);
         }
     });
+};
+
+//Return an user find by token
+userSchema.methods.getUserByToken = function (token, callback) {
+    "use strict";
+    return this.model('User').find({token: token}, callback);
 };
 
 //http://devsmash.com/blog/implementing-max-login-attempts-with-mongoose

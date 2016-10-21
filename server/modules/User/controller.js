@@ -5,7 +5,7 @@
 var User = require('./model');
 var B = require('bluebird');
 var ErrorHandler = require('../Utils/ErrorHandler');
-
+var config = require('../../config/config');
 
 /**
  * Verifica se um usuário existe. Caso não exista, cria um novo usuário com os dados
@@ -54,12 +54,11 @@ var create = function (req, res) {
  * @returns {Array} - Array of user objects
  */
 var getAll = function (req, res) {
-    User.find({}, {_id: 0}, function (err, data) {
+    User.find({}, {_id: 0, token: 0, provider: 0}, function (err, data) {
         if (err) {
             res.status(500).json(ErrorHandler.getErrorMessage(err));
             return;
         }
-        console.log(data);
         res.json(data);
     });
 };
