@@ -2,6 +2,7 @@
  * Created by nattanlucena on 19/10/16.
  */
 var user = require('./controller');
+var auth = require('../Authentication/controller');
 
 var API_VERSION = '/api/v1';
 
@@ -13,7 +14,8 @@ var API_VERSION = '/api/v1';
 function setUserRoutes(app) {
 
     //get all users
-    app.get(API_VERSION + '/users/getAll', user.getAll);
+    app.route(API_VERSION + '/users/getAll').get(auth.isAuthenticated, user.getAll);
+    //app.get(API_VERSION + '/users/getAll', auth.isAuthenticated, user.getAll);
     
     //get an user by email
     app.get(API_VERSION + '/users/:email', user.findByEmail);

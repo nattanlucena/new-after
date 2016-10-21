@@ -3,20 +3,23 @@
  */
 'use strict';
 
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var cors = require('cors');
-var mongoose = require('mongoose');
+var express         = require('express');
+var path            = require('path');
+var bodyParser      = require('body-parser');
+var methodOverride  = require('method-override');
+var cors            = require('cors');
+var mongoose        = require('mongoose');
+var passport        = require('passport');
+var session         = require('express-session');
 
-var pathUtils = require('../modules/Utils/PathUtils');
-var rootPath = path.normalize(__dirname + '/../..');
-var BASE_PATH = '/api/v1';
-var webAppPath = '/client/app';
-var webAppPublicPath = '/client/public';
-var database = require('../config/db');
-
+var pathUtils           = require('../modules/Utils/PathUtils');
+var rootPath            = path.normalize(__dirname + '/../..');
+var BASE_PATH           = '/api/v1';
+var webAppPath          = '/client/app';
+var webAppPublicPath    = '/client/public';
+var database            = require('../config/db');
+var config              = require('../config/config');
+var auth                = require('../modules/Authentication/config')
 
 /**
  * Initialize application middleware.
@@ -167,6 +170,14 @@ function initDB() {
 }
 
 /**
+ * Initialize passport strategies
+ * @param app
+ */
+function initPassport(app) {
+    auth(app);
+}
+
+/**
  * Initialize express application
  *
  * @method init
@@ -187,13 +198,16 @@ function init() {
     initClientRoutes(app);
 
     // Initialize server routes
-    initRoutes(app);
+    initRoutes(app, passport);
 
     // Initialize error routes
     initErrorRoutes(app);
 
     // Initialize database
     initDB();
+
+    // Initialize passport
+    initPassport(app);
 
     return app;
 }

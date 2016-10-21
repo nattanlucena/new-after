@@ -19,8 +19,8 @@ var authTypes = ['facebook', 'google'];
 //###################
 var managerSchema = new Schema({
         name: {
-            first: {type: String, required: true},
-            last: {type: String, required: false}
+            type: String,
+            required: true
         },
         sex: {
             type: String,
@@ -38,6 +38,7 @@ var managerSchema = new Schema({
             required: true,
             select: true
         },
+        createdAt: { type: Date, default: Date.now },
         motels: [{ type: Schema.Types.ObjectId, ref: 'Motel'}]
     },
     {collection: 'manager'});
