@@ -11,3 +11,7 @@ sass - http://sass-lang.com/install
 ## Using SASS and Compass
 $ cd /path/to/project
 $ compass watch
+
+
+#Autenticação
+Autenticação utilizando o passport para a gerência e o JWT para a geração de tokens
