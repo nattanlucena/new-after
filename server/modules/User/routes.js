@@ -29,11 +29,14 @@ function setUserRoutes(app) {
     //get all cancelled reservations
     app.get(API_VERSION + '/users/cancelledReservations', user.getClosedReservations);
 
+    /**
+     * Criação e login sendo realizados no módulo de Autenticação
+     */
     //create a new user
-    app.post(API_VERSION + '/users/create', user.create);
+    //app.post(API_VERSION + '/users/create', user.create);
 
     //user login
-    app.post(API_VERSION + '/users/login', user.login);
+    //app.post(API_VERSION + '/users/login', user.login);
 
     //update email
     app.put(API_VERSION + '/users/update/email', user.updateEmail);

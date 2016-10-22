@@ -16,7 +16,6 @@ var pathUtils = require('../Utils/PathUtils');
 module.exports = function(app) {
     // Initialize strategies
     pathUtils.getGlobbedPaths(path.join(__dirname, './Strategies/*.js')).forEach(function(strategy) {
-        console.log(strategy);
         require(path.resolve(strategy))(User, config);
     });
 
